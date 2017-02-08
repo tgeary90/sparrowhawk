@@ -8,11 +8,11 @@ import tom.app.engine.model.WebPage;
 @Component
 public class DocumentService {
 
-	@Autowired
 	private DocumentDao documentDao;
 	
-	
-	public DocumentService() {
+	@Autowired
+	public DocumentService(DocumentDao documentDao) {
+		this.documentDao = documentDao;
 	}	
 	
 	public void index(WebPage webPage) {

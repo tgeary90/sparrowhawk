@@ -6,6 +6,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentService;
 
@@ -15,11 +18,18 @@ import tom.app.engine.service.DocumentService;
  * @author tomg
  *
  */
-@Path("pages")
+@Component
+@Path("/pages")
 public class WebPageResource {
 	
-	private DocumentService documentService = new DocumentService();
-	
+	private DocumentService documentService;
+
+	@Autowired
+	public WebPageResource(DocumentService documentService) {
+		super();
+		this.documentService = documentService;
+	}
+
 	@POST
 	@Path("index")
 	@Consumes(MediaType.APPLICATION_JSON)
