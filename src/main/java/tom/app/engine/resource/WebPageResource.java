@@ -19,7 +19,7 @@ import tom.app.engine.service.DocumentService;
  *
  */
 @Component
-@Path("/pages")
+@Path("pages")
 public class WebPageResource {
 	
 	private DocumentService documentService;

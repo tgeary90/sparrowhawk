@@ -7,22 +7,30 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.springframework.stereotype.Component;
 
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentDao;
 
+@Component
 public class ElasticsearchDao implements DocumentDao {
 
 	private TransportClient client;
 	
-	public ElasticsearchDao() throws UnknownHostException {
+	public ElasticsearchDao() {
 		super();
 		
 		Settings settings = Settings.builder().put(
 				"cluster.name", "sparrowhawk").build();
-		
-		client = new PreBuiltTransportClient(settings);	
-		client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es"), 9300));
+		try {
+			client = new PreBuiltTransportClient(settings);	
+			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es"), 9300));
+		} 
+		catch (UnknownHostException uhe) {
+			System.err.println("Is elasticsearch running?");
+			uhe.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 	@Override

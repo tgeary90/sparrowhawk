@@ -13,7 +13,8 @@ if ! `docker ps|grep -q es`; then
 	else
 		echo -e "docker container does not exist\n"
 		docker run -d --name es -p 9200:9200 -p 9300:9300 \
-		 -v /home/tomg/es/data:/usr/share/elasticsearch/data sparrow/es
+		 -v /home/tomg/es/data:/usr/share/elasticsearch/data \
+		 sparrow/es -Ecluster.name="sparrowhawk" -Enode.name="es1"
 	fi
 else
 	echo es is running

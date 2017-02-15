@@ -12,7 +12,7 @@
 	<groupId>tom.app.engine</groupId>
 	<artifactId>sparrowhawk</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<!-- <packaging>war</packaging> -->
 
 	<name>SparrowHawk</name>
 	<description>Fast Analytics based Web Filter</description>
@@ -20,9 +20,13 @@
 		<name>fat hamster</name>
 		<url>http://www.fathamster.co.uk</url>
 	</organization>
+
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<elasticsearch.version>5.1.2</elasticsearch.version>
+		<log4j.version>2.7</log4j.version>
 	</properties>
+
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
@@ -30,10 +34,29 @@
 			<artifactId>spring-boot-starter-jersey</artifactId>
 		</dependency>
 
+		<!-- ElasticSearch -->
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>transport</artifactId>
-			<version>5.1.2</version>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 
 		<!-- Provided -->
@@ -42,12 +65,14 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
