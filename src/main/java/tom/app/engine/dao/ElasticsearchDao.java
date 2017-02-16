@@ -9,6 +9,8 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentDao;
 
@@ -35,7 +37,7 @@ public class ElasticsearchDao implements DocumentDao {
 
 	@Override
 	public void index(WebPage page) {
-		// TODO Auto-generated method stub
+		ObjectMapper mapper = new ObjectMapper();
 
 	}
 
