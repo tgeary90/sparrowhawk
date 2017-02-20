@@ -1,9 +1,13 @@
 package tom.app.engine.service;
 
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexResponse;
+
+import tom.app.engine.model.Subscriber;
 import tom.app.engine.model.WebPage;
 
 public interface DocumentDao {
-	void index(WebPage page);
-	WebPage get(int id);
-	void delete(int id);
+	IndexResponse index(WebPage page, Subscriber s);
+	WebPage get(int id, Subscriber s);
+	DeleteResponse delete(int id, Subscriber s);
 }
