@@ -12,14 +12,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class WebPage {
 	private String url;
 	private String htmlText;
+	private String tag;
 
 	@JsonCreator
 	public WebPage(
 			@JsonProperty("url") String url, 
-			@JsonProperty("html") String htmlText) {
+			@JsonProperty("html") String htmlText,
+			@JsonProperty("tag") String tag) {
 		super();
 		this.url = url;
 		this.htmlText = htmlText;
+		this.tag = tag;
 	}
 
 	public String getUrl() {
@@ -38,4 +41,14 @@ public class WebPage {
 	public void setHtmlText(String htmlText) {
 		this.htmlText = htmlText;
 	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	
+	
 }

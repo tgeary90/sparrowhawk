@@ -39,8 +39,12 @@ public class ElasticsearchDao implements DocumentDao {
 		}
 	}
 
+	/**
+	 * Indexes a document into ES under the Subscribers
+	 * ID
+	 */
 	@Override
-	public IndexResponse index(WebPage page, Subscriber s)  {
+	public String index(WebPage page, String s)  {
 		ObjectMapper mapper = new ObjectMapper();
 		byte[] rawJson = null;
 		try {
@@ -50,7 +54,8 @@ public class ElasticsearchDao implements DocumentDao {
 		catch (JsonProcessingException je) {
 			throw new RuntimeException("could not create json", je);
 		}
-		return client.prepareIndex("sub_" + s.getId(), "url").setSource(rawJson).get();
+		IndexResponse resp = client.prepareIndex("sub_" + s, "webpage").setSource(rawJson).get();
+		return resp.getId();
 	}
 
 	@Override
@@ -59,6 +64,10 @@ public class ElasticsearchDao implements DocumentDao {
 		return null;
 	}
 
+	/**
+	 * Deletes a document out of ES under the Subscribers
+	 * ID
+	 */
 	@Override
 	public DeleteResponse delete(int docId, Subscriber s) {
 		return client.prepareDelete("sub_" + s.getId(), "url", String.valueOf(docId)).get();

@@ -15,8 +15,10 @@ public class DocumentService {
 		this.documentDao = documentDao;
 	}	
 	
-	public void index(WebPage webPage) {
-		documentDao.index(webPage);
+	public String index(WebPage webPage, String subscriber) {
+		// TODO create a subscriber if doesnt exist
+		// or validate against if it does.
+		return documentDao.index(webPage, subscriber);
 	}
 
 }
