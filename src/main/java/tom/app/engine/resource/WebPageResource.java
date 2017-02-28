@@ -1,6 +1,7 @@
 package tom.app.engine.resource;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -39,5 +40,10 @@ public class WebPageResource {
 		return documentService.index(webPage, sub);
 	}
 	
-	
+	@GET
+	@Path("{subscriber}/index/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public WebPage getWebPage(@PathParam("subscriber") String sub, @PathParam("id") String docId) {
+		return documentService.get(sub, docId);
+	}
 }

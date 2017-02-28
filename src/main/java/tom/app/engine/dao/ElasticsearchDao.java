@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tom.app.engine.model.Subscriber;
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentDao;
 
@@ -70,17 +69,23 @@ public class ElasticsearchDao implements DocumentDao {
 		catch (JsonProcessingException je) {
 			throw new RuntimeException("could not create json", je);
 		}
-		IndexResponse resp = client.prepareIndex("sub_" + s, "webpage").setSource(rawJson).get();
+		IndexResponse resp = client.prepareIndex(s, "webpage").setSource(rawJson).get();
 		return resp.getId();
 	}
 
 	@Override
-	public WebPage get(int docId, Subscriber s) {
-		GetResponse resp = client.prepareGet("sub_" + s, "webpage", String.valueOf(docId)).get();
-		
-		return new WebPage(
-				(String) resp.getField("url").getValue(),
-				(String) resp.getField("html").getValue());
+	public WebPage get(String docId, String s) {
+		GetResponse resp = client.prepareGet(s, "webpage", String.valueOf(docId)).get();
+		byte[] respJson = resp.getSourceAsBytes();
+		WebPage page = null;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			page = mapper.readValue(respJson, WebPage.class);
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		return page;
 	}
 
 	/**
@@ -88,8 +93,8 @@ public class ElasticsearchDao implements DocumentDao {
 	 * ID
 	 */
 	@Override
-	public DeleteResponse delete(int docId, Subscriber s) {
-		return client.prepareDelete("sub_" + s, "webpage", String.valueOf(docId)).get();
+	public DeleteResponse delete(int docId, String s) {
+		return client.prepareDelete(s, "webpage", String.valueOf(docId)).get();
 	}
 	
 	private void prepareIndex(String indexName, String type) throws IOException {
@@ -128,17 +133,16 @@ public class ElasticsearchDao implements DocumentDao {
 				.endObject().string();
 		
 		client.admin().indices().prepareCreate(indexName)
-			.setSettings(Settings.settingsBuilder().loadFromSource(settingsJson))
+			.setSettings(Settings.builder().loadFromSource(settingsJson))
 			.addMapping(type, mappingJson)
 			.get();
 			
 	}
-	
 
 	private boolean IndexCheck(String s) {
 		GetSettingsResponse resp = client.admin().indices()
 				.prepareGetSettings(s).get();
 		ImmutableOpenMap<String, Settings> cursor = resp.getIndexToSettings();
-		return (cursor == null) || cursor.containsKey("key");
+		return (cursor == null) || cursor.containsKey(s);
 	}
 }

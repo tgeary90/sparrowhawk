@@ -21,4 +21,10 @@ public class DocumentService {
 		return documentDao.index(webPage, subscriber);
 	}
 
+	public WebPage get(String sub, String docId) {
+		return documentDao.get(docId, sub);
+	}
+	
+	
+
 }
