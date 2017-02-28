@@ -38,4 +38,6 @@ public class WebPageResource {
 	public String indexWebPage(@PathParam("subscriber") String sub, WebPage webPage) {
 		return documentService.index(webPage, sub);
 	}
+	
+	
 }
