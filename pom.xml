@@ -41,10 +41,11 @@
 			<version>${elasticsearch.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.elasticsearch</groupId> -->
+		<!-- <artifactId>elasticsearch</artifactId> -->
+		<!-- <version>${elasticsearch.version}</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -62,13 +63,14 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -85,6 +87,10 @@
 					<executable>/usr/bin/javac</executable>
 					<fork>true</fork>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

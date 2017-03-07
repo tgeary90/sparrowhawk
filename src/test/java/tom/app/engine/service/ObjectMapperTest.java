@@ -1,21 +1,27 @@
 package tom.app.engine.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tom.app.engine.model.WebPage;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes=ObjectMapperTest.class)
 public class ObjectMapperTest {
 
 	private final String WEB_PAGE_JSON = "{\"url\":\"www.test.com\",\"html\":\"<html>boo</html>\"}";
 
 	@Test
-	public void shouldDeserializeWebPage() {
+	public void shouldDeserializeWebPageTest() {
 		ObjectMapper mapper = new ObjectMapper();
 		WebPage page = null;
 		
@@ -30,7 +36,7 @@ public class ObjectMapperTest {
 	}
 
 	@Test
-	public void shouldSerializeWebPage() {
+	public void shouldSerializeWebPageTest() {
 		ObjectMapper mapper = new ObjectMapper();
 		WebPage page = new WebPage("www.test.com", "<html>boo</html>");
 		String serializedWebPage = null;
