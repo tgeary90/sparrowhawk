@@ -1,21 +1,23 @@
 package tom.app.engine.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
 
-import java.net.URL;
+import java.util.UUID;
 
 import javax.ws.rs.client.ClientBuilder;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import tom.app.engine.client.EngineClient;
+import tom.app.engine.model.Subscriber;
+import tom.app.engine.model.Subscriber.License;
+import tom.app.engine.model.WebPage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,9 +26,6 @@ public class WebPageResourceIT {
 	@LocalServerPort
 	private int port;
 	
-	//@Autowired
-	//private TestRestTemplate httpClient;
-	
 	private EngineClient client;
 	
 	private String baseURL;
@@ -34,15 +33,16 @@ public class WebPageResourceIT {
 	@Before
 	public void setUp() throws Exception {
 		baseURL = "http://localhost";
-		client = new EngineClient(ClientBuilder.newClient(), baseURL, "8080");
+		client = new EngineClient(ClientBuilder.newClient(), baseURL, String.valueOf(port));
 	}
 	
 	@Test
 	public void shouldIndexWebpage() {
-		// TODO spring boot IT setup
-		// TODO bring up elasticsearch in docker container.
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "test1", License.CUSTOMER);
+		WebPage webPage = new WebPage("www.test1.local", "<html>pass</html>");
+		String docId = client.post(webPage, sub);
 		
-		
+		assertNotNull(docId);
 	}
 	
 	@Test
@@ -52,7 +52,6 @@ public class WebPageResourceIT {
 	
 	@Test
 	public void shouldPassHealthCheck() {
-		//String body = httpClient.getForObject("/healthcheck", String.class);
 		String body = client.get("healthcheck");
 		assertThat(body).isEqualTo("sparrowhawk operational");
 	}

@@ -12,7 +12,6 @@
 	<groupId>tom.app.engine</groupId>
 	<artifactId>sparrowhawk</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<!-- <packaging>war</packaging> -->
 
 	<name>SparrowHawk</name>
 	<description>Fast Analytics based Web Filter</description>
@@ -25,6 +24,8 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<elasticsearch.version>5.1.2</elasticsearch.version>
 		<log4j.version>2.7</log4j.version>
+		<elasticsearch.port>9300</elasticsearch.port>
+		<elasticsearch.dockerWait.ms>3000</elasticsearch.dockerWait.ms>
 	</properties>
 
 	<dependencies>
@@ -40,12 +41,6 @@
 			<artifactId>transport</artifactId>
 			<version>${elasticsearch.version}</version>
 		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.elasticsearch</groupId> -->
-		<!-- <artifactId>elasticsearch</artifactId> -->
-		<!-- <version>${elasticsearch.version}</version> -->
-		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -92,6 +87,48 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>org.jolokia</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.13.9</version>
+				<configuration>
+					<images>
+						<image>
+							<name>sparrow/es</name>
+							<run>
+								<ports>
+									<port>${elasticsearch.port}:9300</port>
+								</ports>
+								<wait>
+									<time>${elasticsearch.dockerWait.ms}</time>
+								</wait>
+							</run>
+						</image>
+					</images>
+					<skip>${skipITs}</skip>
+				</configuration>
+				<!-- Connect this plugin to the maven lifecycle around the integration-test 
+					phase. I.e. start the container in pre-integration-test and stop it in post-integration-test. -->
+				<executions>
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

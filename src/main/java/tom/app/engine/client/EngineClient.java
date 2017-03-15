@@ -11,6 +11,7 @@ import tom.app.engine.model.WebPage;
 
 public class EngineClient {
 
+	private final WebTarget target; 
 	private final Client client;
 	private final String host;
 	private final String port;
@@ -20,11 +21,13 @@ public class EngineClient {
 		this.client = client;
 		this.host = host;
 		this.port = port;
+		
+		target = client.target(host + ":" + port);
 	}
 
 	public String post(WebPage webPage, Subscriber sub) {
-		WebTarget target = client.target("http://" + host + ":" + port);
-		Response resp = target.path("/pages/" + sub + "/index").request(MediaType.APPLICATION_JSON)
+		String endPoint = "pages/" + sub.getName() + "/index";
+		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
 				.post(Entity.entity(webPage,MediaType.APPLICATION_JSON_TYPE));
 		
 		if (resp.getStatus() != 200) {
@@ -34,7 +37,6 @@ public class EngineClient {
 	}
 
 	public WebPage get(String id, Subscriber sub) {
-		WebTarget target = client.target("http://" + host + ":" + port);
 		Response resp = target.path("/pages/" + sub + "/index/" + id).request(
 				MediaType.APPLICATION_JSON).get(Response.class);
 		
@@ -45,7 +47,6 @@ public class EngineClient {
 	}
 	
 	public String get(String path) {
-		WebTarget target = client.target(host + ":" + port);
 		Response resp = target.path(path).request(MediaType.TEXT_HTML).get(Response.class);
 		
 		if (resp.getStatus() != 200) {
