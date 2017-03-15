@@ -15,6 +15,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,21 +28,27 @@ import tom.app.engine.service.DocumentDao;
 @Component
 public class ElasticsearchDao implements DocumentDao {
 
-	private TransportClient client;
 	private final static Logger LOGGER = Logger.getLogger(ElasticsearchDao.class);
 	
-	public ElasticsearchDao() {
+	private TransportClient client;
+	private String clusterName;
+	private String elasticsearchHostname;
+	
+	@Autowired
+	public ElasticsearchDao(@Value("${es.cluster.name}") String clusterName,  @Value("${es.host.name}") String elasticsearchHostname) {
 		super();
+		this.clusterName = clusterName;
+		this.elasticsearchHostname = elasticsearchHostname;
 		
 		Settings settings = Settings.builder().put(
-				"cluster.name", "sparrowhawk").build();
+				"cluster.name", this.clusterName).build();
 		try {
 			client = new PreBuiltTransportClient(settings);	
-			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("es"), 9300));
+			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(this.elasticsearchHostname), 9300));
+			LOGGER.info("Connected to "+elasticsearchHostname+" for cluster "+clusterName);
 		} 
-		catch (UnknownHostException uhe) {
-			LOGGER.error("Is elasticsearch running?");
-			uhe.printStackTrace();
+		catch (UnknownHostException e) {
+			LOGGER.error("Is elasticsearch running?", e);
 			System.exit(1);
 		}
 	}
