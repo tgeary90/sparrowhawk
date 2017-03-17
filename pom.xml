@@ -22,10 +22,10 @@
 
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<elasticsearch.version>5.1.2</elasticsearch.version>
+		<es.version>5.1.2</es.version>
 		<log4j.version>2.7</log4j.version>
-		<elasticsearch.port>9300</elasticsearch.port>
-		<elasticsearch.dockerWait.ms>3000</elasticsearch.dockerWait.ms>
+		<es.port>9300</es.port>
+		<es.dockerWait.ms>3000</es.dockerWait.ms>
 	</properties>
 
 	<dependencies>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>transport</artifactId>
-			<version>${elasticsearch.version}</version>
+			<version>${es.version}</version>
 		</dependency>
 
 		<dependency>
@@ -65,6 +65,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.github.tdomzal</groupId> -->
+<!-- 			<artifactId>junit-docker-rule</artifactId> -->
+<!-- 			<version>0.3</version> -->
+<!-- 			<scope>test</scope> -->
+<!-- 		</dependency> -->
 
 	</dependencies>
 	<build>
@@ -86,6 +93,20 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<environmentVariables>
+						<es.host.name>test</es.host.name>
+						<es.cluster.name>test</es.cluster.name>
+					</environmentVariables>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -98,10 +119,10 @@
 							<name>sparrow/es</name>
 							<run>
 								<ports>
-									<port>${elasticsearch.port}:9300</port>
+									<port>${es.port}:9300</port>
 								</ports>
 								<wait>
-									<time>${elasticsearch.dockerWait.ms}</time>
+									<time>${es.dockerWait.ms}</time>
 								</wait>
 							</run>
 						</image>
