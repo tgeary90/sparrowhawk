@@ -23,7 +23,7 @@ import tom.app.engine.model.WebPage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@TestPropertySource("classpath:test.properties")
+@TestPropertySource("classpath:test.properties")
 public class WebPageResourceIT {
 
 	@LocalServerPort
@@ -39,9 +39,9 @@ public class WebPageResourceIT {
 		client = new EngineClient(ClientBuilder.newClient(), baseURL, String.valueOf(port));
 	}
 	
-	@Ignore
+	@Test
 	public void shouldIndexWebpage() {
-		Subscriber sub = new Subscriber(UUID.randomUUID(), "test1", License.CUSTOMER);
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "test_index", License.CUSTOMER);
 		WebPage webPage = new WebPage("www.test1.local", "<html>pass</html>");
 		String docId = client.post(webPage, sub);
 		
@@ -53,7 +53,7 @@ public class WebPageResourceIT {
 		
 	}
 	
-	@Test
+	@Ignore
 	public void shouldPassHealthCheck() {
 		String body = client.get("healthcheck");
 		assertThat(body).isEqualTo("sparrowhawk operational");

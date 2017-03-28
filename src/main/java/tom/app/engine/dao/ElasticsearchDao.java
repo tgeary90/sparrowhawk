@@ -14,6 +14,7 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,18 +34,21 @@ public class ElasticsearchDao implements DocumentDao {
 	private TransportClient client;
 	private String clusterName;
 	private String elasticsearchHostname;
+	private String port;
 	
 	@Autowired
-	public ElasticsearchDao(@Value("${es.cluster.name}") String clusterName,  @Value("${es.host.name}") String elasticsearchHostname) {
+	public ElasticsearchDao(@Value("${es.cluster.name}") String clusterName,  @Value("${es.host.name}") String elasticsearchHostname, 
+			@Value("${es.port}") String port) {
 		super();
 		this.clusterName = clusterName;
 		this.elasticsearchHostname = elasticsearchHostname;
+		this.port = port;
 		
 		Settings settings = Settings.builder().put(
 				"cluster.name", this.clusterName).build();
 		try {
 			client = new PreBuiltTransportClient(settings);	
-			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(this.elasticsearchHostname), 9300));
+			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(this.elasticsearchHostname), Integer.valueOf(port)));
 			LOGGER.info("Connected to "+elasticsearchHostname+" for cluster "+clusterName);
 		} 
 		catch (UnknownHostException e) {
@@ -123,7 +127,6 @@ public class ElasticsearchDao implements DocumentDao {
 
 		String mappingJson = XContentFactory.jsonBuilder()
 				.startObject()
-					.startObject("mappings")
 						.startObject(type)
 							.startObject("properties")
 								.startObject("url")
@@ -137,7 +140,6 @@ public class ElasticsearchDao implements DocumentDao {
 								.endObject()
 							.endObject()
 						.endObject()
-					.endObject()
 				.endObject().string();
 		
 		client.admin().indices().prepareCreate(indexName)
@@ -148,8 +150,14 @@ public class ElasticsearchDao implements DocumentDao {
 	}
 
 	private boolean IndexCheck(String s) {
-		GetSettingsResponse resp = client.admin().indices()
+		GetSettingsResponse resp = null;
+		try {
+			 resp = client.admin().indices()
 				.prepareGetSettings(s).get();
+		} 
+		catch (Throwable t) {
+			return false;
+		}
 		ImmutableOpenMap<String, Settings> cursor = resp.getIndexToSettings();
 		return (cursor == null) || cursor.containsKey(s);
 	}

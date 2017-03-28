@@ -24,8 +24,9 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<es.version>5.1.2</es.version>
 		<log4j.version>2.7</log4j.version>
-		<es.port>9300</es.port>
-		<es.dockerWait.ms>3000</es.dockerWait.ms>
+		<es.tcp.port>9300</es.tcp.port>
+		<es.http.port>9200</es.http.port>
+		<es.dockerWait.ms>10000</es.dockerWait.ms>
 	</properties>
 
 	<dependencies>
@@ -113,12 +114,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<environmentVariables>
-						<es.host.name>test</es.host.name>
-						<es.cluster.name>test</es.cluster.name>
-					</environmentVariables>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -131,11 +126,17 @@
 							<name>sparrow/es</name>
 							<run>
 								<ports>
-									<port>${es.port}:9300</port>
+									<port>${es.tcp.port}:9300</port>
+									<port>${es.http.port}:9200</port>
 								</ports>
 								<wait>
 									<time>${es.dockerWait.ms}</time>
 								</wait>
+								<volumes>
+									<bind>
+										<volume>${basedir}/src/test/resources/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml</volume>
+									</bind>
+								</volumes>
 							</run>
 						</image>
 					</images>
