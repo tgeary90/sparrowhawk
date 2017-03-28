@@ -86,8 +86,8 @@ public class ElasticsearchDao implements DocumentDao {
 	}
 
 	@Override
-	public WebPage get(String docId, String s) {
-		GetResponse resp = client.prepareGet(s, "webpage", String.valueOf(docId)).get();
+	public WebPage get(String docId, String index) {
+		GetResponse resp = client.prepareGet(index, "webpage", String.valueOf(docId)).get();
 		byte[] respJson = resp.getSourceAsBytes();
 		WebPage page = null;
 		ObjectMapper mapper = new ObjectMapper();

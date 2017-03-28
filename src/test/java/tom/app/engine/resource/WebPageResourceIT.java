@@ -46,14 +46,13 @@ public class WebPageResourceIT {
 		String docId = client.post(webPage, sub);
 		
 		assertNotNull(docId);
-	}
-	
-	@Ignore
-	public void shouldRetrieveWebPage() {
 		
+		WebPage actual = client.get(docId, sub);
+		assertThat(actual.getHtmlText()).isEqualTo("<html>pass</html>");
+		assertThat(actual.getUrl()).isEqualTo("www.test1.local");
 	}
 	
-	@Ignore
+	@Test
 	public void shouldPassHealthCheck() {
 		String body = client.get("healthcheck");
 		assertThat(body).isEqualTo("sparrowhawk operational");

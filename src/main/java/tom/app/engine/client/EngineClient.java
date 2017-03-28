@@ -37,7 +37,8 @@ public class EngineClient {
 	}
 
 	public WebPage get(String id, Subscriber sub) {
-		Response resp = target.path("/pages/" + sub + "/index/" + id).request(
+		String endPoint = "pages/" + sub.getName() + "/index/";
+		Response resp = target.path(endPoint + id).request(
 				MediaType.APPLICATION_JSON).get(Response.class);
 		
 		if (resp.getStatus() != 200) {
