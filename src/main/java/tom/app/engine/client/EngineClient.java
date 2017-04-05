@@ -27,13 +27,7 @@ public class EngineClient {
 
 	public String indexAPage(WebPage webPage, Subscriber sub) {
 		String endPoint = "pages/" + sub.getId() + "/index";
-		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
-				.post(Entity.entity(webPage,MediaType.APPLICATION_JSON_TYPE));
-		
-		if (resp.getStatus() != 200) {
-			throw new RuntimeException(resp.getStatus() + ": error");
-		}
-		return resp.readEntity(String.class);
+		return postWebPageReturnString(webPage, endPoint);
 	}
 
 	public String registerSubscriber(Subscriber sub) {
@@ -67,20 +61,17 @@ public class EngineClient {
 		return resp.readEntity(String.class);
 	}
 	
-	public Client getClient() {
-		return client;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public String getPort() {
-		return port;
-	}
-
 	public String searchFor(WebPage webPage, Subscriber sub) {
 		String endPoint = "pages/" + sub.getId() + "/search/";
+		return postWebPageReturnString(webPage, endPoint);
+	}
+
+	public String filter(WebPage webPage, Subscriber sub) {
+		String endPoint = "pages/" + sub.getId() + "/filter/";
+		return postWebPageReturnString(webPage, endPoint);
+	}
+
+	private String postWebPageReturnString(WebPage webPage, String endPoint) {
 		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
 				.post(Entity.entity(webPage, MediaType.APPLICATION_JSON_TYPE));
 		
@@ -89,4 +80,5 @@ public class EngineClient {
 		}
 		return resp.readEntity(String.class);
 	}
+
 }

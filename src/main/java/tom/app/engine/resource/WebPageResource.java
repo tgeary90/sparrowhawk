@@ -29,7 +29,6 @@ public class WebPageResource {
 
 	@Autowired
 	public WebPageResource(DocumentService documentService) {
-		super();
 		this.documentService = documentService;
 	}
 
@@ -53,7 +52,14 @@ public class WebPageResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
 	public String searchWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
-		
 		return documentService.search(subId, webPage);
+	}
+	
+	@POST
+	@Path("{subscriberId}/filter")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
+	public String filterWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		return documentService.filter(subId, webPage);
 	}
 }

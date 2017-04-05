@@ -72,4 +72,36 @@ public class WebPageResourceIT {
 		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestFind</html>");
 		assertThat(actual.getUrl()).isEqualTo("www.findapage.local");
 	}
+	
+	@Test
+	public void shouldAllowARequest() {
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
+		client.registerSubscriber(sub);
+		WebPage webPage = new WebPage("www.allowapage.local", "<html>passTestAllow</html>");
+		client.indexAPage(webPage, sub);
+		String id = client.searchFor(webPage, sub);
+		WebPage actual = client.getPage(id, sub);
+		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestAllow</html>");
+		assertThat(actual.getUrl()).isEqualTo("www.allowapage.local");
+		
+		String result = client.filter(webPage, sub);
+		
+		assertThat(result).isEqualTo("ALLOW");
+	}
+	
+	@Test
+	public void shouldBlockARequest() {
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
+		client.registerSubscriber(sub);
+		WebPage webPage = new WebPage("www.blockapage.local", "<html>passTestBlock</html>");
+		client.indexAPage(webPage, sub);
+		String id = client.searchFor(webPage, sub);
+		WebPage actual = client.getPage(id, sub);
+		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestBlock</html>");
+		assertThat(actual.getUrl()).isEqualTo("www.blockapage.local");
+		
+		String result = client.filter(webPage, sub);
+		
+		assertThat(result).isEqualTo("BLOCK");
+	}
 }
