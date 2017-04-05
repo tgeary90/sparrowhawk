@@ -25,8 +25,8 @@ public class EngineClient {
 		target = client.target(host + ":" + port);
 	}
 
-	public String post(WebPage webPage, Subscriber sub) {
-		String endPoint = "pages/" + sub.getName() + "/index";
+	public String indexAPage(WebPage webPage, Subscriber sub) {
+		String endPoint = "pages/" + sub.getId() + "/index";
 		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
 				.post(Entity.entity(webPage,MediaType.APPLICATION_JSON_TYPE));
 		
@@ -36,8 +36,19 @@ public class EngineClient {
 		return resp.readEntity(String.class);
 	}
 
-	public WebPage get(String id, Subscriber sub) {
-		String endPoint = "pages/" + sub.getName() + "/index/";
+	public String registerSubscriber(Subscriber sub) {
+		String endPoint = "subscribers";
+		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
+				.post(Entity.entity(sub, MediaType.APPLICATION_JSON_TYPE));
+		
+		if (resp.getStatus() != 200) {
+			throw new RuntimeException(resp.getStatus() + ": error");
+		}
+		return resp.readEntity(String.class);
+	}
+	
+	public WebPage getPage(String id, Subscriber sub) {
+		String endPoint = "pages/" + sub.getId() + "/index/";
 		Response resp = target.path(endPoint + id).request(
 				MediaType.APPLICATION_JSON).get(Response.class);
 		

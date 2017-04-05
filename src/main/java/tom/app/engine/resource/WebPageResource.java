@@ -11,11 +11,12 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import tom.app.engine.model.Subscriber;
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentService;
 
 /**
- * Resource to provide index/get/delete operations on simple page
+ * Resource to provide CRUD operations for page
  * objects.
  * @author tomg
  *
@@ -33,17 +34,27 @@ public class WebPageResource {
 	}
 
 	@POST
-	@Path("{subscriber}/index")
+	@Path("{subscriberId}/index")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
-	public String indexWebPage(@PathParam("subscriber") String sub, WebPage webPage) {
-		return documentService.index(webPage, sub);
+	public String indexWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		return documentService.index(webPage, subId);
 	}
 	
 	@GET
-	@Path("{subscriber}/index/{id}")
+	@Path("{subscriberId}/index/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebPage getWebPage(@PathParam("subscriber") String sub, @PathParam("id") String docId) {
-		return documentService.get(sub, docId);
+	public WebPage getWebPage(@PathParam("subscriberId") String subId, @PathParam("id") String docId) {
+		return documentService.get(subId, docId);
+	}
+	
+	@POST
+	@Path("{subscriberId}/search")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
+	public String searchWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		
+		// TODO Request Flow
+		return documentService.search(subId, webPage);
 	}
 }

@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -14,7 +15,6 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,16 +62,13 @@ public class ElasticsearchDao implements DocumentDao {
 	 * ID
 	 */
 	@Override
-	public String index(WebPage page, String s)  {
+	public String index(WebPage page, String index)  {
 		
-		boolean isIndexExists = IndexCheck(s);
+		boolean isIndexExists = IndexCheck(index);
 		if ( ! isIndexExists) {
-			try {
-				prepareIndex(s, "webpage");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			return "Request not from Subscriber.";
 		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		byte[] rawJson = null;
 		try {
@@ -81,7 +78,7 @@ public class ElasticsearchDao implements DocumentDao {
 		catch (JsonProcessingException je) {
 			throw new RuntimeException("could not create json", je);
 		}
-		IndexResponse resp = client.prepareIndex(s, "webpage").setSource(rawJson).get();
+		IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).get();
 		return resp.getId();
 	}
 
@@ -109,7 +106,13 @@ public class ElasticsearchDao implements DocumentDao {
 		return client.prepareDelete(s, "webpage", String.valueOf(docId)).get();
 	}
 	
-	private void prepareIndex(String indexName, String type) throws IOException {
+	@Override
+	public String prepareIndex(String indexName, String type) throws IOException {
+		
+		boolean isIndexExists = IndexCheck(indexName);
+		if (isIndexExists) {
+			return "Index already exists for " + indexName;
+		}
 		
 		String settingsJson = XContentFactory.jsonBuilder()
 		.startObject()
@@ -142,11 +145,12 @@ public class ElasticsearchDao implements DocumentDao {
 						.endObject()
 				.endObject().string();
 		
-		client.admin().indices().prepareCreate(indexName)
+		CreateIndexResponse resp = client.admin().indices().prepareCreate(indexName)
 			.setSettings(Settings.builder().loadFromSource(settingsJson))
 			.addMapping(type, mappingJson)
 			.get();
 			
+		return String.valueOf(resp.isAcknowledged());
 	}
 
 	private boolean IndexCheck(String s) {

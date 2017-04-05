@@ -16,13 +16,17 @@ public class DocumentService {
 	}	
 	
 	public String index(WebPage webPage, String subscriber) {
-		// TODO create a subscriber if doesnt exist
-		// or validate against if it does.
+		// TODO validate against subscriber
 		return documentDao.index(webPage, subscriber);
 	}
 
 	public WebPage get(String sub, String docId) {
 		return documentDao.get(docId, sub);
+	}
+
+	public String search(String sub, WebPage webPage) {
+		// TODO request flow logic
+		return null;
 	}
 	
 	

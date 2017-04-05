@@ -1,8 +1,5 @@
 package tom.app.engine.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.UUID;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -18,12 +15,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import tom.app.engine.client.EngineClient;
 import tom.app.engine.model.Subscriber;
 import tom.app.engine.model.Subscriber.License;
-import tom.app.engine.model.WebPage;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:test.properties")
-public class WebPageResourceIT {
+public class SubscriberResourceIT {
 
 	@LocalServerPort
 	private int port;
@@ -39,24 +38,10 @@ public class WebPageResourceIT {
 	}
 	
 	@Test
-	public void shouldIndexWebpage() {
-		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
-		client.registerSubscriber(sub);
-		WebPage webPage = new WebPage("www.test1.local", "<html>pass</html>");
+	public void shouldRegisterSubscriber() {
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "register", License.CUSTOMER);
+		String result = client.registerSubscriber(sub);
 		
-		String docId = client.indexAPage(webPage, sub);
-		
-		assertNotNull(docId);
-		
-		WebPage actual = client.getPage(docId, sub);
-		
-		assertThat(actual.getHtmlText()).isEqualTo("<html>pass</html>");
-		assertThat(actual.getUrl()).isEqualTo("www.test1.local");
-	}
-	
-	@Test
-	public void shouldPassHealthCheck() {
-		String body = client.get("healthcheck");
-		assertThat(body).isEqualTo("sparrowhawk operational");
+		assertThat(result).isEqualTo("true");
 	}
 }

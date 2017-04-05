@@ -2,15 +2,27 @@ package tom.app.engine.model;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Model class for Subscriber details.
+ * @author tomg
+ *
+ */
 public class Subscriber {
 	private final UUID id;
-	private final String name;
+	private final String subscriberName;
 	private final License license;
 	
-	public Subscriber(UUID id, String name, License license) {
+	@JsonCreator
+	public Subscriber(
+			@JsonProperty("id") UUID id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("license") License license) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.subscriberName = name;
 		this.license = license;
 	}
 
@@ -21,7 +33,7 @@ public class Subscriber {
 	}
 
 	public String getName() {
-		return name;
+		return subscriberName;
 	}
 
 	public License getLicense() {
