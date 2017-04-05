@@ -48,8 +48,8 @@ public class EngineClient {
 	}
 	
 	public WebPage getPage(String id, Subscriber sub) {
-		String endPoint = "pages/" + sub.getId() + "/index/";
-		Response resp = target.path(endPoint + id).request(
+		String endPoint = "pages/" + sub.getId() + "/index/" + id;
+		Response resp = target.path(endPoint).request(
 				MediaType.APPLICATION_JSON).get(Response.class);
 		
 		if (resp.getStatus() != 200) {
@@ -77,5 +77,16 @@ public class EngineClient {
 
 	public String getPort() {
 		return port;
+	}
+
+	public String searchFor(WebPage webPage, Subscriber sub) {
+		String endPoint = "pages/" + sub.getId() + "/search/";
+		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
+				.post(Entity.entity(webPage, MediaType.APPLICATION_JSON_TYPE));
+		
+		if (resp.getStatus() != 200) {
+			throw new RuntimeException(resp.getStatus() + ": error");
+		}
+		return resp.readEntity(String.class);
 	}
 }

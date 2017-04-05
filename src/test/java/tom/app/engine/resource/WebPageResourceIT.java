@@ -39,24 +39,37 @@ public class WebPageResourceIT {
 	}
 	
 	@Test
-	public void shouldIndexWebpage() {
+	public void shouldIndexAPage() {
 		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
 		client.registerSubscriber(sub);
-		WebPage webPage = new WebPage("www.test1.local", "<html>pass</html>");
+		WebPage webPage = new WebPage("www.dexapage.local", "<html>pass</html>");
 		
 		String docId = client.indexAPage(webPage, sub);
 		
 		assertNotNull(docId);
-		
 		WebPage actual = client.getPage(docId, sub);
-		
 		assertThat(actual.getHtmlText()).isEqualTo("<html>pass</html>");
-		assertThat(actual.getUrl()).isEqualTo("www.test1.local");
+		assertThat(actual.getUrl()).isEqualTo("www.dexapage.local");
 	}
 	
 	@Test
 	public void shouldPassHealthCheck() {
 		String body = client.get("healthcheck");
 		assertThat(body).isEqualTo("sparrowhawk operational");
+	}
+	
+	@Test
+	public void shouldFindAPage() {
+		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
+		client.registerSubscriber(sub);
+		WebPage webPage = new WebPage("www.findapage.local", "<html>passTestFind</html>");
+		String docId = client.indexAPage(webPage, sub);
+		assertNotNull(docId);
+		
+		String id = client.searchFor(webPage, sub);
+		
+		WebPage actual = client.getPage(docId, sub);
+		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestFind</html>");
+		assertThat(actual.getUrl()).isEqualTo("www.findapage.local");
 	}
 }

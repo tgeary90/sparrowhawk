@@ -15,18 +15,17 @@ public class DocumentService {
 		this.documentDao = documentDao;
 	}	
 	
-	public String index(WebPage webPage, String subscriber) {
-		// TODO validate against subscriber
-		return documentDao.index(webPage, subscriber);
+	public String index(WebPage webPage, String subId) {
+		// TODO validate against subIdscriber
+		return documentDao.index(webPage, subId);
 	}
 
-	public WebPage get(String sub, String docId) {
-		return documentDao.get(docId, sub);
+	public WebPage get(String subId, String docId) {
+		return documentDao.get(docId, subId);
 	}
 
-	public String search(String sub, WebPage webPage) {
-		// TODO request flow logic
-		return null;
+	public String search(String subId, WebPage webPage) {
+		return documentDao.search(subId, webPage.getUrl(), "webpage", "url");
 	}
 	
 	

@@ -10,11 +10,14 @@ import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,6 +156,22 @@ public class ElasticsearchDao implements DocumentDao {
 		return String.valueOf(resp.isAcknowledged());
 	}
 
+	@Override
+	public String search(String subId, String url, String type, String field) {
+		String result = "miss";
+		SearchResponse resp = client.prepareSearch(subId)
+				.setTypes(type)
+				//.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				.setQuery(QueryBuilders.termQuery(field, url))
+				.setFrom(0).setSize(1).setExplain(true).get();
+		long numHits = resp.getHits().getTotalHits();
+		if (numHits > 0) {
+			SearchHit hit = resp.getHits().getAt(0);
+			result = hit.field("_id").getValue();
+		}
+		return result;
+	}
+	
 	private boolean IndexCheck(String s) {
 		GetSettingsResponse resp = null;
 		try {
@@ -165,4 +184,5 @@ public class ElasticsearchDao implements DocumentDao {
 		ImmutableOpenMap<String, Settings> cursor = resp.getIndexToSettings();
 		return (cursor == null) || cursor.containsKey(s);
 	}
+
 }
