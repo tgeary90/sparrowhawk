@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,12 +26,12 @@ public class ListLoaderService {
 	
 	private final LexicalExpressionList<TextEntity> swearingList;
 	private final LexicalExpressionList<TextEntity> gunsList;
-	private final LexicalExpressionList<TextEntity> lexList;
+	private final LexicalExpressionList<CustomTextEntity> lexList;
 	
 	public ListLoaderService() {
 		this.swearingList = new LexicalExpressionList<>(new ArrayList<>(10), "swearing");
-		this.gunsList = new LexicalExpressionList<TextEntity>(new ArrayList<TextEntity>(10), "guns");
-		this.lexList = new LexicalExpressionList<TextEntity>(new ArrayList<TextEntity>(10), "swearslexlist");
+		this.gunsList = new LexicalExpressionList<>(new ArrayList<>(10), "guns");
+		this.lexList = new LexicalExpressionList<>(new ArrayList<>(10), "swearslexlist");
 	}
 	
 	public void load() {
@@ -40,19 +41,24 @@ public class ListLoaderService {
 		
 	}
 
-	public List<LexicalExpressionList<TextEntity>> get() {
-		List<LexicalExpressionList<TextEntity>> lists = new ArrayList<>();
-		lists.add(lexList);
+	public List<LexicalExpressionList<? extends TextEntity>> getTokenLists() {
+		List<LexicalExpressionList<? extends TextEntity>> lists = new ArrayList<>();
 		lists.add(gunsList);
 		lists.add(swearingList);
 		return lists;
 	}
 	
+
+	public List<LexicalExpressionList<? extends TextEntity>> getRegexLists() {
+		List<LexicalExpressionList<? extends TextEntity>> lists = new ArrayList<>();
+		lists.add(lexList);
+		return lists;
+	}
+	
 	private void generateList() {
 		lexList
-			.add(new PredefinedTextEntity(UUID.randomUUID(), "gstr", "gangster"))
-			.add(new CustomTextEntity(UUID.randomUUID(), "fk", "f[a-zA-Z]ck"))
-			.add(new CustomTextEntity(UUID.randomUUID(), "bstrd", "b[a-zA-Z]st[a-zA-Z]rd"));
+			.add(new CustomTextEntity(UUID.randomUUID(), "bstrd", "b[a-zA-Z]st[a-zA-Z]rd"))
+			.add(new CustomTextEntity(UUID.randomUUID(), "fk", "f[a-zA-Z]ck"));
 	}
 
 	private void readIntoList(String tokens, LexicalExpressionList<TextEntity> list) {

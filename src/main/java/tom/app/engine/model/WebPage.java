@@ -17,7 +17,6 @@ public class WebPage {
 	public WebPage(
 			@JsonProperty("url") String url, 
 			@JsonProperty("html") String htmlText) {
-		super();
 		this.url = url;
 		this.htmlText = htmlText;
 	}

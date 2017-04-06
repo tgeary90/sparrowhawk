@@ -3,6 +3,7 @@ package tom.app.engine.dao;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -16,6 +17,8 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
@@ -157,12 +160,11 @@ public class ElasticsearchDao implements DocumentDao {
 	}
 
 	@Override
-	public String search(String subId, String url, String type, String field) {
+	public String getDocId(String subId, String value, String type, String field) {
 		String result = "miss";
 		SearchResponse resp = client.prepareSearch(subId)
 				.setTypes(type)
-				//.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(QueryBuilders.termQuery(field, url))
+				.setQuery(QueryBuilders.termQuery(field, value))
 				.setFrom(0).setSize(1).setExplain(true).get();
 		long numHits = resp.getHits().getTotalHits();
 		if (numHits > 0) {
@@ -170,6 +172,23 @@ public class ElasticsearchDao implements DocumentDao {
 			result = hit.field("_id").getValue();
 		}
 		return result;
+	}
+	
+	@Override
+	public WebPage filter(String subId, String type, QueryBuilder qb) {
+		WebPage page = new WebPage("", "");
+		SearchResponse resp = client.prepareSearch(subId)
+				.setTypes(type)
+				.setQuery(qb)
+				.setFrom(0).setSize(1).setExplain(true).get();
+		long numHits = resp.getHits().getTotalHits();
+		if (numHits > 0) {
+			SearchHit hit = resp.getHits().getAt(0);
+			Map<String, Object> rawPage = hit.getSource();
+			page.setUrl((String) rawPage.get("url"));
+			page.setHtmlText((String) rawPage.get("html"));
+		}
+		return page;
 	}
 	
 	private boolean IndexCheck(String s) {

@@ -1,6 +1,6 @@
 package tom.app.engine.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import jersey.repackaged.com.google.common.base.MoreObjects;
@@ -21,8 +21,12 @@ public class LexicalExpressionList<E extends TextEntity>{
 		this.name = name;
 	}
 	
-	public List<E> getEntities() {
-		return Collections.unmodifiableList(lexList);
+	public String[] getTokens() {
+		String[] tokens = new String[lexList.size()];
+		List<String> tokenStrings = new ArrayList<>();
+		lexList.forEach((te) -> tokenStrings.add(te.value));
+		tokenStrings.toArray(tokens);
+		return tokens;
 	}
 	
 	public LexicalExpressionList<E> add(E e) {
@@ -34,5 +38,9 @@ public class LexicalExpressionList<E extends TextEntity>{
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 				.add("lexlist", name).toString();
+	}
+	
+	public int size() {
+		return lexList.size();
 	}
 }
