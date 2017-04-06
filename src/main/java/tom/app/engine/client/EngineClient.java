@@ -36,7 +36,7 @@ public class EngineClient {
 				.post(Entity.entity(sub, MediaType.APPLICATION_JSON_TYPE));
 		
 		if (resp.getStatus() != 200) {
-			throw new RuntimeException(resp.getStatus() + ": error");
+			throw new RuntimeException(resp.getStatus() + ": " + resp.getEntity().toString());
 		}
 		return resp.readEntity(String.class);
 	}

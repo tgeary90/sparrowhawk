@@ -169,7 +169,7 @@ public class ElasticsearchDao implements DocumentDao {
 		long numHits = resp.getHits().getTotalHits();
 		if (numHits > 0) {
 			SearchHit hit = resp.getHits().getAt(0);
-			result = hit.field("_id").getValue();
+			result = hit.field("id").getValue();
 		}
 		return result;
 	}

@@ -62,7 +62,7 @@ public class ListLoaderService {
 	}
 
 	private void readIntoList(String tokens, LexicalExpressionList<TextEntity> list) {
-		InputStream is = getClass().getResourceAsStream("scanning/managedlists/" + tokens);
+		InputStream is = getClass().getResourceAsStream("/scanning/managedlists/" + tokens);
 		BufferedReader buf = new BufferedReader(new InputStreamReader(is));
 		StringBuilder sb = new StringBuilder();
 		try {

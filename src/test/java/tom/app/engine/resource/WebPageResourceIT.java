@@ -79,7 +79,9 @@ public class WebPageResourceIT {
 		client.registerSubscriber(sub);
 		WebPage webPage = new WebPage("www.allowapage.local", "<html>passTestAllow</html>");
 		client.indexAPage(webPage, sub);
+		
 		String id = client.searchFor(webPage, sub);
+		
 		WebPage actual = client.getPage(id, sub);
 		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestAllow</html>");
 		assertThat(actual.getUrl()).isEqualTo("www.allowapage.local");
@@ -93,7 +95,7 @@ public class WebPageResourceIT {
 	public void shouldBlockARequest() {
 		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
 		client.registerSubscriber(sub);
-		WebPage webPage = new WebPage("www.blockapage.local", "<html>passTestBlock</html>");
+		WebPage webPage = new WebPage("www.blockapage.local", "<html>revolver</html>");
 		client.indexAPage(webPage, sub);
 		String id = client.searchFor(webPage, sub);
 		WebPage actual = client.getPage(id, sub);
