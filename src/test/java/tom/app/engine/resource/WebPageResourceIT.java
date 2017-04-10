@@ -77,12 +77,14 @@ public class WebPageResourceIT {
 	public void shouldAllowARequest() {
 		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
 		client.registerSubscriber(sub);
+		sleep(2);
 		WebPage webPage = new WebPage("www.allowapage.local", "<html>passTestAllow</html>");
 		client.indexAPage(webPage, sub);
-		
+		sleep(2);
 		String id = client.searchFor(webPage, sub);
-		
+		sleep(1);
 		WebPage actual = client.getPage(id, sub);
+		sleep(1);
 		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestAllow</html>");
 		assertThat(actual.getUrl()).isEqualTo("www.allowapage.local");
 		
@@ -95,15 +97,25 @@ public class WebPageResourceIT {
 	public void shouldBlockARequest() {
 		Subscriber sub = new Subscriber(UUID.randomUUID(), "indexPage", License.CUSTOMER);
 		client.registerSubscriber(sub);
+		sleep(2);
 		WebPage webPage = new WebPage("www.blockapage.local", "<html>revolver</html>");
 		client.indexAPage(webPage, sub);
+		sleep(2);
 		String id = client.searchFor(webPage, sub);
+		sleep(1);
 		WebPage actual = client.getPage(id, sub);
-		assertThat(actual.getHtmlText()).isEqualTo("<html>passTestBlock</html>");
+		sleep(1);
+		assertThat(actual.getHtmlText()).isEqualTo("<html>revolver</html>");
 		assertThat(actual.getUrl()).isEqualTo("www.blockapage.local");
 		
 		String result = client.filter(webPage, sub);
 		
 		assertThat(result).isEqualTo("BLOCK");
+	}
+	
+	private void sleep(int seconds) {
+		try {
+			Thread.sleep(seconds * 1000L);
+		} catch (InterruptedException ie) {}
 	}
 }

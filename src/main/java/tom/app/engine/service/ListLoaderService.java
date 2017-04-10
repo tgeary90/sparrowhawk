@@ -32,6 +32,8 @@ public class ListLoaderService {
 		this.swearingList = new LexicalExpressionList<>(new ArrayList<>(10), "swearing");
 		this.gunsList = new LexicalExpressionList<>(new ArrayList<>(10), "guns");
 		this.lexList = new LexicalExpressionList<>(new ArrayList<>(10), "swearslexlist");
+		
+		load();
 	}
 	
 	public void load() {

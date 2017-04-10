@@ -18,6 +18,6 @@ public class SparrowhawkApplication extends SpringBootServletInitializer {
 				)).run(args);
 		
 		// read in Managed Lists from disk
-		ctx.getBean(ListLoaderService.class).load();
+		//ctx.getBean(ListLoaderService.class).load();
 	}
 }

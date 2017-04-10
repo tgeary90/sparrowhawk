@@ -63,9 +63,21 @@ public class DocumentService {
 			QueryBuilder qb = buildTermsQuery(toks, webPage.getUrl());
 				pages.add(documentDao.filter(subId, "webpage", qb));
 			});
-		return (pages.size() >= 1) ? Action.ALLOW : Action.BLOCK; 
+		return checkResults(pages);
 	}
 	
+	private Action checkResults(List<WebPage> pages) {
+		Action action = Action.ALLOW;
+		for (WebPage page : pages) {
+			if (page.getUrl().equals("")) {
+				action = Action.BLOCK;
+				break;
+			}
+		}
+		return action;
+	}
+
+
 	QueryBuilder buildTermsQuery(LexicalExpressionList<? extends TextEntity> tokenList, String url) {
 		String[] terms = tokenList.getTokens();
 		QueryBuilder qb = boolQuery()
