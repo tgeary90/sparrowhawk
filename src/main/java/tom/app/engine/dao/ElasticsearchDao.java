@@ -17,7 +17,6 @@ import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -30,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tom.app.engine.model.WebPage;
+import tom.app.engine.model.WebPageMixIn;
 import tom.app.engine.service.DocumentDao;
 
 @Component
@@ -76,6 +76,7 @@ public class ElasticsearchDao implements DocumentDao {
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.addMixIn(WebPage.class, WebPageMixIn.class);
 		byte[] rawJson = null;
 		try {
 			rawJson = mapper.writeValueAsBytes(page);
@@ -94,6 +95,7 @@ public class ElasticsearchDao implements DocumentDao {
 		byte[] respJson = resp.getSourceAsBytes();
 		WebPage page = null;
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.addMixIn(WebPage.class, WebPageMixIn.class);
 		try {
 			page = mapper.readValue(respJson, WebPage.class);
 		}

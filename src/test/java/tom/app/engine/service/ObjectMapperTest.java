@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tom.app.engine.model.WebPage;
+import tom.app.engine.model.WebPageMixIn;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ObjectMapperTest.class)
@@ -23,6 +24,7 @@ public class ObjectMapperTest {
 	@Test
 	public void shouldDeserializeWebPageTest() {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.addMixIn(WebPage.class, WebPageMixIn.class);
 		WebPage page = null;
 		
 		try {
@@ -38,6 +40,7 @@ public class ObjectMapperTest {
 	@Test
 	public void shouldSerializeWebPageTest() {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.addMixIn(WebPage.class, WebPageMixIn.class);
 		WebPage page = new WebPage("www.test.com", "<html>boo</html>");
 		String serializedWebPage = null;
 		

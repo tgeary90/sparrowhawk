@@ -15,12 +15,10 @@ public class Subscriber {
 	private final String subscriberName;
 	private final License license;
 	
-	@JsonCreator
 	public Subscriber(
 			@JsonProperty("id") UUID id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("license") License license) {
-		super();
 		this.id = id;
 		this.subscriberName = name;
 		this.license = license;
