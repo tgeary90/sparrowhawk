@@ -43,18 +43,22 @@ public class ElasticsearchDao implements DocumentDao {
 	private String port;
 	
 	@Autowired
-	public ElasticsearchDao(@Value("${es.cluster.name}") String clusterName,  @Value("${es.host.name}") String elasticsearchHostname, 
+	public ElasticsearchDao(
+			@Value("${es.cluster.name}") String clusterName,
+			@Value("${es.host.name}") String elasticsearchHostname, 
 			@Value("${es.port}") String port) {
-		super();
+		
 		this.clusterName = clusterName;
 		this.elasticsearchHostname = elasticsearchHostname;
 		this.port = port;
 		
-		Settings settings = Settings.builder().put(
-				"cluster.name", this.clusterName).build();
+		Settings settings = Settings.builder()
+				.put("client.transport.sniff", false)
+				.put("cluster.name", clusterName)
+				.build();
 		try {
 			client = new PreBuiltTransportClient(settings);	
-			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(this.elasticsearchHostname), Integer.valueOf(port)));
+			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticsearchHostname), Integer.valueOf(port)));
 			LOGGER.info("Connected to "+elasticsearchHostname+" for cluster "+clusterName);
 		} 
 		catch (UnknownHostException e) {

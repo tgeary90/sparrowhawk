@@ -142,7 +142,7 @@
 								</ports>
 								<wait>
 									<time>${es.dockerWait.ms}</time>
-									<shutdown>${es.dockerWait.ms}</shutdown>
+<!-- 									<shutdown>${es.dockerWait.ms}</shutdown> -->
 								</wait>
 								<volumes>
 									<bind>

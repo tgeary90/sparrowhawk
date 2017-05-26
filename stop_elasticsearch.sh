@@ -6,15 +6,15 @@
 
 stop_mode=$1
 
-if ! `docker ps|grep -q es`; then
-	echo "es is not running"; exit 0
+if ! `docker ps|grep -q sparrowsearch`; then
+	echo "sparrowsearch is not running"; exit 0
 elif [ ! -z $stop_mode ] && [ $stop_mode = "hard" ]; then
-	docker kill es
-	docker rm es
+	docker kill sparrowsearch
+	docker rm sparrowsearch
 	docker kill kib
 	docker rm kib
 else
-	echo "es is running"
-	docker stop es
+	echo "sparrowsearch is running"
+	docker stop sparrowsearch
 	docker stop kib
 fi
