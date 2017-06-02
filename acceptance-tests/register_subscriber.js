@@ -21,33 +21,26 @@ var clean = {
   method: 'DELETE'  
 };
 
-//function sendReq() {
-//  var req = http.request(options, function(res) {
-//   res.on("data", function(chunk) {
-//     console.log(chunk.toString());
-//    });
-//  });
-//  req.on("error", function(e) {
-//    console.error('request failed ' + e.message);
-//  });
-//  req.write(subscriberJson);
-//  req.end();
-//}
 
 describe('Subscription', function() {
 
   before(function() {
     var req = http.request(clean, function(res) {
-      console.log("cleaned index, status: " + res.statusCode);
+      res.on('end', function () {
+          console.log("cleaned index, status: " + res.statusCode);
+      });
     });
     req.end();
   });
 
   it('Subscribe to Sparrowhawk', function() {
     var req = http.request(subscribe, function(err, res) {
-      expect(res.statusCode).to.equal(200);
-      expect(res.body).to.equal('true');
+      res.on('end', function (err) {
+          expect(res.statusCode).to.equal(200);
+          expect(res.body).to.equal('true');
+      });
     });
+    req.write(subscriberJson);
     req.end();
   });
 });
