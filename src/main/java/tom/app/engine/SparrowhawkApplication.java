@@ -5,8 +5,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import tom.app.engine.service.ListLoaderService;
-
 @SpringBootApplication
 public class SparrowhawkApplication extends SpringBootServletInitializer {
 

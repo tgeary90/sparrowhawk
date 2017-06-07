@@ -23,7 +23,7 @@ public class SubscriberService {
 
 	public String register(Subscriber sub) {
 		try {
-			return documentDao.prepareIndex(sub.getId().toString(), "webpage");
+			return documentDao.prepareIndex(sub.getName().toLowerCase(), "webpage");
 		} catch (IOException e) {
 			LOGGER.warn("Unable to register subscriber {}", sub.getName(), e);
 		}

@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import tom.app.engine.model.Subscriber;
 import tom.app.engine.service.SubscriberService;
@@ -27,7 +26,6 @@ public class SubscriberResource {
 	
 	@Autowired
 	public SubscriberResource(SubscriberService subscriberService) {
-		super();
 		this.subscriberService = subscriberService;
 	}
 	

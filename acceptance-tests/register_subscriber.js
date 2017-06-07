@@ -1,47 +1,39 @@
-var http = require('http');
 var expect = require('chai').expect;
+var chai = require('chai'), chaiHttp = require('chai-http');
 
-var subscriberJson = '{"id":"9559346a-8f69-4b7c-8879-2d983dec015a","name":"jeromes-food-ltd","license":"CUSTOMER"}';
+var subscriberJson = '{"id":"f45a1143-a917-4bda-861b-79473f28238b","name":"test","license":"CUSTOMER"}';
 
-var subscribe = {
- hostname: '172.17.0.1',
- port: 8090,
- path: '/subscribers',
- method: 'POST',
- headers: {
-  'Content-Length': subscriberJson.length,
-  'Content-Type': 'application/json'
- }
+chai.use(chaiHttp);
+
+var clean = function clean(done) {
+    chai.request('http://sparrowsearch:9200')
+      .delete('/test')
+      .end(function (err, res) {
+        console.log('Cleaning index \'test\'');
+        done();
+      });
 };
-
-var clean = {
-  hostname: '172.17.0.1',
-  port: 8090,
-  path: '/9559346a-8f69-4b7c-8879-2d983dec015a',
-  method: 'DELETE'  
-};
-
 
 describe('Subscription', function() {
 
-  before(function() {
-    var req = http.request(clean, function(res) {
-      res.on('end', function () {
-          console.log("cleaned index, status: " + res.statusCode);
-      });
-    });
-    req.end();
+  before('before', function (done) {
+    clean(done);
   });
 
-  it('Subscribe to Sparrowhawk', function() {
-    var req = http.request(subscribe, function(err, res) {
-      res.on('end', function (err) {
-          expect(res.statusCode).to.equal(200);
-          expect(res.body).to.equal('true');
+  after('after', function (done) {
+    clean(done);
+  });
+  
+  it('Subscribe to Sparrowhawk', function (done) {
+    console.log('beginning subscription test');
+    chai.request('http://172.17.0.1:8090')
+      .post('/subscribers')
+      .set('Content-Type', 'application/json')
+      .send(subscriberJson)
+      .end(function (err, res) {
+        expect(res).to.have.status(200);
+        done();
       });
-    });
-    req.write(subscriberJson);
-    req.end();
   });
 });
 

@@ -7,23 +7,32 @@ var config = require('./config');
 
 
 var server = http.createServer(function (req, res) {
+
+	var myUrl = url.parse(req.url);
+	var target = myUrl.pathname;
 	
-	var endpoint = url.parse(req.url).pathname;
+	console.log('Request for URL received: ' + target);
 	
 	// Do we have this page?
 	var docId;
-	var sparrowReq = http.request(config.sparrowhawkGet, function (sparrowRes) {
-		console.log("Requesting page from sparrowhawk "+ endpoint);
+	var sparrowReq = http.request(config.search, function (sparrowRes) {
+		console.log("Requesting page from sparrowhawk: "+ target);
 		
 		sparrowRes.on('data', function (data) {
 			docId += data;
 		});
 		sparrowRes.on('end', function () {
-			console("docId: " + docId);
+			console.log("docId: " + docId);
 		});
-		
 	});
-
+	
+	var webpage = {
+		'url': myUrl,
+		'html': ""
+	};
+	sparrowReq.write(JSON.stringify(webpage));
+	sparrowReq.end();
+	
 	// if no, we need to fetch it from origin (or 404)
 	
 	// and index it

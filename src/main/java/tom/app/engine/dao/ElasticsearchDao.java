@@ -54,12 +54,12 @@ public class ElasticsearchDao implements DocumentDao {
 		
 		Settings settings = Settings.builder()
 				.put("client.transport.sniff", false)
-				.put("cluster.name", clusterName)
+				.put("cluster.name", this.clusterName)
 				.build();
 		try {
 			client = new PreBuiltTransportClient(settings);	
-			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticsearchHostname), Integer.valueOf(port)));
-			LOGGER.info("Connected to "+elasticsearchHostname+" for cluster "+clusterName);
+			client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(this.elasticsearchHostname), Integer.valueOf(this.port)));
+			LOGGER.info("Connected to "+elasticsearchHostname+" for cluster "+this.clusterName);
 		} 
 		catch (UnknownHostException e) {
 			LOGGER.error("Is elasticsearch running?", e);
@@ -121,6 +121,7 @@ public class ElasticsearchDao implements DocumentDao {
 	@Override
 	public String prepareIndex(String indexName, String type) throws IOException {
 		
+		LOGGER.info("Preparing index with name: " + indexName + " and with mapping " + type);
 		boolean isIndexExists = IndexCheck(indexName);
 		if (isIndexExists) {
 			return "Index already exists for " + indexName;

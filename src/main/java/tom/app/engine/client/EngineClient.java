@@ -17,7 +17,6 @@ public class EngineClient {
 	private final String port;
 	
 	public EngineClient(Client client, String host, String port) {
-		super();
 		this.client = client;
 		this.host = host;
 		this.port = port;
@@ -26,7 +25,7 @@ public class EngineClient {
 	}
 
 	public String indexAPage(WebPage webPage, Subscriber sub) {
-		String endPoint = "pages/" + sub.getId() + "/index";
+		String endPoint = "pages/" + sub.getName().toLowerCase() + "/index";
 		return postWebPageReturnString(webPage, endPoint);
 	}
 
@@ -42,7 +41,7 @@ public class EngineClient {
 	}
 	
 	public WebPage getPage(String id, Subscriber sub) {
-		String endPoint = "pages/" + sub.getId() + "/index/" + id;
+		String endPoint = "pages/" + sub.getName().toLowerCase() + "/index/" + id;
 		Response resp = target.path(endPoint).request(
 				MediaType.APPLICATION_JSON).get(Response.class);
 		
@@ -62,12 +61,12 @@ public class EngineClient {
 	}
 	
 	public String searchFor(WebPage webPage, Subscriber sub) {
-		String endPoint = "pages/" + sub.getId() + "/search/";
+		String endPoint = "pages/" + sub.getName().toLowerCase() + "/search/";
 		return postWebPageReturnString(webPage, endPoint);
 	}
 
 	public String filter(WebPage webPage, Subscriber sub) {
-		String endPoint = "pages/" + sub.getId() + "/filter/";
+		String endPoint = "pages/" + sub.getName().toLowerCase() + "/filter/";
 		return postWebPageReturnString(webPage, endPoint);
 	}
 

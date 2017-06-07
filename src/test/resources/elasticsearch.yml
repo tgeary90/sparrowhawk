@@ -5,9 +5,3 @@ indices.query.bool.max_clause_count: 10240
 path.shared_data: /var/lib/elasticsearch/data
 http.port: 9200
 
-#http.host: 0.0.0.0
-#transport.host: 127.0.0.1
-#indices.ttl.interval: 1s
-#indices.queries.cache.size: 256mb
-#discovery.zen.minimum_master_nodes: 1
-#path.shared_data: /var/lib/elasticsearch/data/

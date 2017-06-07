@@ -28,7 +28,6 @@ public class DocumentService {
 	
 	@Autowired
 	public DocumentService(DocumentDao documentDao, ListLoaderService loaderService) {
-		super();
 		this.documentDao = documentDao;
 		this.loaderService = loaderService;
 	}
