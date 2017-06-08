@@ -7,11 +7,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tom.app.engine.model.Subscriber;
 import tom.app.engine.model.WebPage;
 import tom.app.engine.service.DocumentService;
 
@@ -36,8 +37,9 @@ public class WebPageResource {
 	@Path("{subscriberId}/index")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
-	public String indexWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
-		return documentService.index(webPage, subId);
+	public Response indexWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		String docId = documentService.index(webPage, subId);
+		 return Response.status(Status.CREATED).entity(docId).build();
 	}
 	
 	@GET

@@ -89,6 +89,8 @@ public class ElasticsearchDao implements DocumentDao {
 		catch (JsonProcessingException je) {
 			throw new RuntimeException("could not create json", je);
 		}
+		// TODO check to see if this document already exists 
+		// in the index
 		IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).get();
 		return resp.getId();
 	}

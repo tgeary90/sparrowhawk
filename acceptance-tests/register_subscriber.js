@@ -1,27 +1,19 @@
 var expect = require('chai').expect;
 var chai = require('chai'), chaiHttp = require('chai-http');
+var helper = require('./test_helper');
 
 var subscriberJson = '{"id":"f45a1143-a917-4bda-861b-79473f28238b","name":"test","license":"CUSTOMER"}';
 
 chai.use(chaiHttp);
 
-var clean = function clean(done) {
-    chai.request('http://sparrowsearch:9200')
-      .delete('/test')
-      .end(function (err, res) {
-        console.log('Cleaning index \'test\'');
-        done();
-      });
-};
-
 describe('Subscription', function() {
 
   before('before', function (done) {
-    clean(done);
+    helper.clean_elasticsearch(done);
   });
 
   after('after', function (done) {
-    clean(done);
+    helper.clean_elasticsearch(done);
   });
   
   it('Subscribe to Sparrowhawk', function (done) {
