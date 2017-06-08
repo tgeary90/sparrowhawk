@@ -34,11 +34,26 @@ var server = http.createServer(function (req, res) {
 	sparrowReq.end();
 	
 	// if no, we need to fetch it from origin (or 404)
-	
+	var page;
+	if (docId === '') {
+		var req = http.request(myUrl, function (res) {
+			res.on('connect', function () {
+				console.log('headers: ' + JSON.stringify(res.headers));
+			});
+			res.on('data', function (chunk) {
+				page += chunk;
+			});
+			res.on('end', function () {
+				console.log('No more data.');
+			});
+		});
+	}
 	// and index it
 	
 	// INVARIANT - we have a page
 	
 	// filter the page
+	
+	
 }).listen(8091);
 console.log('sparrow-proxy listening on 8091...');
