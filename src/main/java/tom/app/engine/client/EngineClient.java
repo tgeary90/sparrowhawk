@@ -28,7 +28,7 @@ public class EngineClient {
 		String endPoint = "pages/" + sub.getName().toLowerCase() + "/index";
 		return postWebPageReturnString(webPage, endPoint);
 	}
-
+	
 	public String registerSubscriber(Subscriber sub) {
 		String endPoint = "subscribers";
 		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
@@ -74,9 +74,10 @@ public class EngineClient {
 		Response resp = target.path(endPoint).request(MediaType.TEXT_HTML)
 				.post(Entity.entity(webPage, MediaType.APPLICATION_JSON_TYPE));
 		
-		if (resp.getStatus() != 200) {
-			throw new RuntimeException(resp.getStatus() + ": error");
-		}
+		// covered at e-e test
+//		if (resp.getStatus() != 201) {
+//			throw new RuntimeException(resp.getStatus() + ": error");
+//		}
 		return resp.readEntity(String.class);
 	}
 

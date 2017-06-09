@@ -45,23 +45,26 @@ public class WebPageResource {
 	@GET
 	@Path("{subscriberId}/index/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebPage getWebPage(@PathParam("subscriberId") String subId, @PathParam("id") String docId) {
-		return documentService.get(subId, docId);
+	public Response getWebPage(@PathParam("subscriberId") String subId, @PathParam("id") String docId) {
+		WebPage page = documentService.get(subId, docId);
+		return Response.ok().entity(page).build();
 	}
 	
 	@POST
 	@Path("{subscriberId}/search")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
-	public String searchWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
-		return documentService.search(subId, webPage);
+	public Response searchWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		String docId = documentService.search(subId, webPage);
+		return Response.ok().entity(docId).build();
 	}
 	
 	@POST
 	@Path("{subscriberId}/filter")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
-	public String filterWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
-		return documentService.filter(subId, webPage).toString();
+	public Response filterWebPage(@PathParam("subscriberId") String subId, WebPage webPage) {
+		String decision = documentService.filter(subId, webPage).toString();
+		return Response.ok().entity(decision).build();
 	}
 }
