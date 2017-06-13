@@ -1,5 +1,4 @@
 #!/bin/bash
 
 cd $HOME/src/sparrowhawk/acceptance-tests
-docker run -it -v $HOME/src/sparrowhawk/acceptance-tests:/tests --rm test_node:1 mocha -R spec /tests/register_subscriber.js
-docker run -it -v $HOME/src/sparrowhawk/acceptance-tests:/tests --rm test_node:1 mocha -R spec /tests/index_page.js
+docker run -it -v $HOME/src/sparrowhawk/acceptance-tests:/tests --link sparrowsearch --rm test_node:1 /tests/acceptance-tests.sh

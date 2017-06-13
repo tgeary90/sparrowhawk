@@ -17,7 +17,6 @@ describe('Subscription', function() {
   });
   
   it('Subscribe to Sparrowhawk', function (done) {
-    console.log('beginning subscription test');
     chai.request('http://172.17.0.1:8090')
       .post('/subscribers')
       .set('Content-Type', 'application/json')

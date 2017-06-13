@@ -7,7 +7,6 @@ var clean_elasticsearch = function clean(done) {
   chai.request('http://sparrowsearch:9200')
     .delete('/test')
     .end(function (err, res) {
-      console.log('\tcleaning index \'test\'');
       done();
     });
 };

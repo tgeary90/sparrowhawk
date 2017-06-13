@@ -10,7 +10,6 @@ var subscriberJson = '{"id":"f45a1143-a917-4bda-861b-79473f28238b","name":"test"
 describe('Webpage', function() {
 
 	before('before', function(done) {
-		//helper.clean_elasticsearch(done);
 		helper.subscribe(done, subscriberJson);
 	});
 
@@ -24,16 +23,29 @@ describe('Webpage', function() {
 			.set('Content-Type', 'application/json').send(page)
 			.end(function (err, res) {
 				expect(res).to.have.status(201);
+				expect(res.text).to.be.a('string');
 				done();
 			});
 	});
-
+	
 	it('Get a webpage', function(done) {
+		
+		var docId;
+		
 		chai.request('http://172.17.0.1:8090')
-			.get('/pages/test/1')
+		.post('/pages/test/index')
+		.set('Content-Type', 'application/json').send(page)
+		.end(function (err, res) {
+			docId = res.text;
+
+			chai.request('http://172.17.0.1:8090')
+			.get('/pages/test/index/' + docId)
 			.end(function (err, res) {
+				expect(res.body).to.have.property('url');
+				expect(res.body).to.have.property('html');
 				expect(res).to.have.status(200);
 				done();
 			});
+		});
 	});
 });
