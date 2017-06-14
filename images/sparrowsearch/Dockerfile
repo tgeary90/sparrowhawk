@@ -1,5 +1,5 @@
 FROM elasticsearch:5.1
-MAINTAINER tom geary
+MAINTAINER tgeary90
 
 RUN apt-get update && \
  apt-get upgrade -y
