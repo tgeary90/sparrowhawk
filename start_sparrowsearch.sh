@@ -12,9 +12,9 @@ if ! `docker ps|grep -q 'sparrowsearch'`; then
 		docker start sparrowsearch
 	else
 		echo -e "docker 'sparrowsearch' container does not exist\n"
-		docker run -d --name sparrowsearch -h sparrowsearch -p 9200:9200 -p 9300:9300 \
+		docker run -d --name sparrowsearch -p 9200:9200 -p 9300:9300 \
 		 -v /home/tomg/es/data:/usr/share/elasticsearch/data \
-		 sparrow/es 
+		sparrowsearch -Ecluster.name="sparrowhawk"  
 	fi
 else
 	echo sparrowsearch is running
