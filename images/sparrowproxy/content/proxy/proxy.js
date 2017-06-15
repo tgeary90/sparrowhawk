@@ -58,8 +58,7 @@ function isPageInElasticsearch(webpage) {
 			if (docId === '') {
 				getPageFromOrigin(requestUrl);
 			}
-			else {
-			// TODO: should be regex test on ID
+			else if (/\w+/.test(docId)) {
 				filterPage(webpage);
 			}
 		});
@@ -73,19 +72,19 @@ function isPageInElasticsearch(webpage) {
  * @param requestUrl
  */
 function getPageFromOrigin(requestUrl, indexPage) {
-	var pageReq = http.request(requestUrl, function (err, res) {
+	var pageReq = http.request(requestUrl, function (err, sparrowRes) {
 		if (err) {
 			console.log("Could not connect to origin server at: " + req.hostname);
 		}
 		
-		res.on('connect', function () {
+		sparrowRes.on('connect', function () {
 			console.log('Connected to origin');
-			//console.log('headers: ' + JSON.stringify(res.headers));
+			//console.log('headers: ' + JSON.stringify(sparrowRes.headers));
 		});
-		res.on('data', function (chunk) {
+		sparrowRes.on('data', function (chunk) {
 			page += chunk;
 		});
-		res.on('end', function () {
+		sparrowRes.on('end', function () {
 			console.log('Indexing page');
 			
 			// and index it
@@ -101,12 +100,12 @@ function getPageFromOrigin(requestUrl, indexPage) {
  * @param webpage
  */
 function indexPage(webpage) {
-	var indexReq = http.request(sparrowhawk.index, function (err, res) {
+	var indexReq = http.request(sparrowhawk.index, function (err, sparrowRes) {
 		if (err) {
 			console.error('Index request failed ' + e.message);
 		}
 		
-		res.on('end', function () {
+		sparrowRes.on('end', function () {
 			console.log('Indexed page ' + requestUrl);
 			filterPage(webpage);
 		})
@@ -119,26 +118,30 @@ function indexPage(webpage) {
  * @param webpage
  */
 function filterPage(webpage) {
-	var filterReq = http.request(sparrowhawk.filter, function (res) {
+	var filterReq = http.request(sparrowhawk.filter, function (sparrowRes) {
 		
 		var decision;
-		res.on('data', function (chunk) {
+		sparrowRes.on('data', function (chunk) {
 			decision += chunk;
 		});
 		
-		res.on('end', function () {
+		sparrowRes.on('end', function () {
 			console.log('Filtered page ' + requestUrl);
 			
 			if (decision === 'ALLOW') {
-				// TODO : allow action - read out to res. headers and webpage
 				if (webpage.html === '') {
 					getPageFromOrigin(requestUrl, function (requestUrl) {
-						consol.log("Retrieving " + requestUrl.hostname + requestUrl.path);
+						console.log("Retrieving " + requestUrl.hostname + requestUrl.path);
 					});
 				}
+				res.writeHead(sparrowRes.statusCode, {'Content-Type': 'application/json'});
+				res.write(webpage);
+				res.end();
 			}
 			else if (decision === 'BLOCK') {
-				// TODO : block action - blockpage.
+				res.writeHead(sparrowRes.statusCode, {'Content-Type': 'text/plain'});
+				res.write('BLOCKED');
+				res.end();
 			}
 			else {
 				console.log('ERROR: sparrowhawk policy neither ALLOW or BLOCK: ' + decision);
