@@ -134,7 +134,7 @@
 				<configuration>
 					<images>
 						<image>
-							<name>sparrow/es</name>
+							<name>sparrowsearch</name>
 							<run>
 								<ports>
 									<port>${es.tcp.port}:9300</port>

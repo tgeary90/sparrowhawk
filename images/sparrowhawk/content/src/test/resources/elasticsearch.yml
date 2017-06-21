@@ -3,5 +3,6 @@ node.name: sparrowsearch
 network.host: 0.0.0.0
 indices.query.bool.max_clause_count: 10240
 path.shared_data: /var/lib/elasticsearch/data
-http.port: 9200
+#http.port: 2222
+#tcp.port: 1111
 

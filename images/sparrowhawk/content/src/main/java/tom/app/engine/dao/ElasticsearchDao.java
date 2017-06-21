@@ -65,6 +65,11 @@ public class ElasticsearchDao implements DocumentDao {
 			LOGGER.error("Is elasticsearch running?", e);
 			System.exit(1);
 		}
+		catch (Exception e) {
+			LOGGER.error("could not connect to elastic seach with these parameters...");
+			LOGGER.error("port: " + port + ", " + " hostname: + " + elasticsearchHostname);
+			System.exit(1);;
+		}
 	}
 	
 	/**
