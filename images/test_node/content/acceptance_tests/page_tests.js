@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var chai = require('chai'), chaiHttp = require('chai-http');
-var helper = require('./test_helper');
+var helper = require('../common_test/test_helper');
 
 chai.use(chaiHttp);
 
@@ -14,7 +14,7 @@ describe('Webpage', function() {
 	});
 
 	after('after', function(done) {
-		helper.clean_elasticsearch(done);
+		helper.clean(done);
 	});
 
 	it('Index a webpage', function(done) {

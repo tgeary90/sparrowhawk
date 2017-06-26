@@ -1,0 +1,21 @@
+version: '2'
+services:
+  sparrowhawk:
+    build: images/sparrowhawk
+    ports: 
+     - "8090:8090"
+  sparrowsearch:
+    build: images/sparrowsearch
+    ports:
+     - "9200:9200"
+     - "9300:9300"
+    volumes:
+     - /home/tomg/es/data:/usr/share/elasticsearch/data
+    environment:
+     - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+  sparrowproxy:
+    build: images/sparrowproxy
+    ports: 
+     - "8091:8091"
+    
+ 

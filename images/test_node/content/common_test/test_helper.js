@@ -3,7 +3,7 @@ var chai = require('chai'), chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
 
-var clean_elasticsearch = function clean(done) {
+module.exports.clean = function (done) {
   chai.request('http://sparrowsearch:9200')
     .delete('/test')
     .end(function (err, res) {
@@ -11,8 +11,8 @@ var clean_elasticsearch = function clean(done) {
     });
 };
 
-var subscribe = function subscribe(done, json) {
-  chai.request('http://172.17.0.1:8090')
+module.exports.subscribe = function (done, json) {
+  chai.request('http://sparrowhawk:8090')
     .post('/subscribers')
     .set('Content-Type', 'application/json')
     .send(json)
@@ -22,5 +22,3 @@ var subscribe = function subscribe(done, json) {
     });
 };
 
-module.exports.clean_elasticsearch = clean_elasticsearch;
-module.exports.subscribe = subscribe;

@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var chai = require('chai'), chaiHttp = require('chai-http');
-var helper = require('./test_helper');
+var helper = require('../common_test/test_helper');
 
 var subscriberJson = '{"id":"f45a1143-a917-4bda-861b-79473f28238b","name":"test","license":"CUSTOMER"}';
 
@@ -9,11 +9,12 @@ chai.use(chaiHttp);
 describe('Subscription', function() {
 
   before('before', function (done) {
-    helper.clean_elasticsearch(done);
+    console.log('before');
+    helper.clean(done);
   });
 
   after('after', function (done) {
-    helper.clean_elasticsearch(done);
+    helper.clean(done);
   });
   
   it('Subscribe to Sparrowhawk', function (done) {

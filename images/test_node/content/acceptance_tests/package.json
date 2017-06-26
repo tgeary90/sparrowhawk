@@ -1,7 +1,7 @@
 {
   "name": "sparrowhawk-acceptance-test-pack",
   "version": "1.0.0",
-  "description": "Node e-e tests against sparrowhawk web filter",
+  "description": "Node-based acceptance tests against sparrowhawk web filter",
   "main": "index.js",
   "directories": {
     "test": "test"
