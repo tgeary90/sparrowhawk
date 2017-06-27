@@ -15,6 +15,8 @@ RUN cd /acceptance_tests \
 RUN cd /common_test \
  && npm install chai \
  && npm install chai-http
+RUN cd /e2e_tests \
+ && npm install 
 
 ENV HOSTNAME=test-node
 CMD ["/bin/bash", "-c", "/acceptance_tests/acceptance_tests.sh"]

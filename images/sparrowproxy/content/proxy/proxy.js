@@ -45,8 +45,8 @@ function isPageInElasticsearch(webpage) {
 	var sparrowReq = http.request(sparrowhawk.search, function (err, sparrowRes) {
 		if (err) {
 			console.error("Could not reach sparrowhawk search endpoint");
+			process.exit(1);
 		}
-		console.log("Requesting page from sparrowhawk: "+ target);
 		
 		sparrowRes.on('data', function (data) {
 			docId += data;
