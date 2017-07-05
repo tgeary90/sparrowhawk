@@ -6,11 +6,10 @@ COPY ./content /
 RUN apt-get update \
  && apt-get install -y --force-yes vim tree \
  && rm -rf /var/lib/apt/lists/* \
- && apt-get clean \
+ && apt-get clean 
 
 ENV HOSTNAME=sparrowproxy
-ENTRYPOINT ["node", "/proxy/proxy.js"]
-CMD ["8091"]
+CMD ["node", "/proxy/proxy.js", "8091"]
 
 
 

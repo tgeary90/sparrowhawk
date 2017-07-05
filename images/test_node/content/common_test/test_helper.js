@@ -3,16 +3,20 @@ var chai = require('chai'), chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
 
-module.exports.clean = function (done) {
+var host = 'sparrowhawk';
+//var host = '172.17.0.1';
+
+module.exports.clean = function (done, subscriber) {
   chai.request('http://sparrowsearch:9200')
-    .delete('/test')
+    .delete('/' + subscriber)
     .end(function (err, res) {
       done();
     });
 };
 
 module.exports.subscribe = function (done, json) {
-  chai.request('http://sparrowhawk:8090')
+	console.log("host: " + host);
+  chai.request('http://' + host + ':8090')
     .post('/subscribers')
     .set('Content-Type', 'application/json')
     .send(json)

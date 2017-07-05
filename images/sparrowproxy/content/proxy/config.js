@@ -1,36 +1,39 @@
 
 // config.js - config for connections to sparrowhawk web filter
 
+//var host = 'sparrowhawk';
+var host = 'localhost';
+
 var getPage = {
-	host : 'sparrowhawk',
+	host : host,
 	port : 8090,
 	path : '/pages/sparrowhawk/',
 	method : 'GET'
 };
 
 var subscribe = {
-	host : 'sparrowhawk',
+	host : host,
 	port : 8090,
 	path : '/subscribers',
 	method : 'POST'
 };
 
 var search = {
-	host : 'sparrowhawk',
+	host : host,
 	port : 8090,
 	path : '/pages/sparrowhawk/search',
 	method : 'POST'
 };
 
 var index = {
-	host : 'sparrowhawk',
+	host : host,
 	port : 8090,
 	path : '/pages/sparrowhawk/index',
 	method : 'POST'
 };
 
 var filter = {
-	host: 'sparrowhawk',
+	host: host,
 	port: 8090,
 	path: '/pages/sparrowhawk/filter',
 	method: 'POST'

@@ -8,31 +8,36 @@ var sparrowhawk = require('./config');
 
 var proxy = http.createServer(function (req, res) {
 
-	var requestUrl = url.parse(req.url);
+	console.log("Received request from " + req.connection.remoteAddress);
+	console.log("URL: " + req.url);
+	console.log("Method: " + req.method);
 	
-	console.log("hostname: " + requestUrl.hostname);	
-	console.log("pathname: " + requestUrl.pathname);
-	console.log("port: " + requestUrl.port);
-	console.log("path: " + requestUrl.path);
-	console.log("method: " + req.method);
-	for (var hdr in req.headers) {
-		console.log("\t" + hdr + ": " + req.headers[hdr]);
-	}
-	
-	// DEBUG
-	//process.exit(1);
-	
-	var target = requestUrl.hostname + requestUrl.path;
-	console.log('Request for URL received: ' + target);
-	
-	var docId;
-	var webpage = {
-			'url': target,
-			'html': ""
-	};
-	var page;
-	
-	isPageInElasticsearch(webpage);
+    var requestUrl = url.parse(req.url);
+
+    console.log("hostname: " + requestUrl.hostname);
+    console.log("pathname: " + requestUrl.pathname);
+    console.log("port: " + requestUrl.port);
+    console.log("path: " + requestUrl.path);
+    console.log("method: " + req.method);
+    for (var hdr in req.headers) {
+            console.log("\t" + hdr + ": " + req.headers[hdr]);
+    }
+
+    // DEBUG
+    //process.exit(1);
+
+    var target = requestUrl.hostname + requestUrl.path;
+    var isFullUrl = /\//.text(target);
+    if (! isFullUrl) {
+    	target += '/index.html';
+    }
+    console.log('Request for URL received: ' + target);
+
+    var docId;
+    var webpage = {
+	    'url': target,
+	    'html': ""
+    };
 	
 }).listen(process.argv[2]);
 console.log('sparrow-proxy listening on ' + process.argv[2] + '...');
@@ -42,14 +47,23 @@ console.log('sparrow-proxy listening on ' + process.argv[2] + '...');
  * @param webpage
  */
 function isPageInElasticsearch(webpage) {
+	
+	var webpageText = JSON.stringify(webpage);
+	var docId = '';
+	
+	sparrowhawk.search.headers = { 
+		'Content-Type': 'application/json',
+	};
 	var sparrowReq = http.request(sparrowhawk.search, function (err, sparrowRes) {
 		if (err) {
-			console.error("Could not reach sparrowhawk search endpoint");
-			process.exit(1);
+			console.log("Webpage length is: " +webpageText.length);
+			console.log("Webpage is: " + webpageText);
+			console.error("Failure at sparrowhawk search endpoint " + err.message);
+			return;
 		}
 		
-		sparrowRes.on('data', function (data) {
-			docId += data;
+		sparrowRes.on('data', function (chunk) {
+			docId += chunk;
 		});
 		sparrowRes.on('end', function () {
 			console.log("docId: " + docId);
@@ -64,7 +78,7 @@ function isPageInElasticsearch(webpage) {
 		});
 	});
 	
-	sparrowReq.write(JSON.stringify(webpage));
+	sparrowReq.write(webpageText);
 	sparrowReq.end();
 }
 
