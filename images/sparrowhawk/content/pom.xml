@@ -134,7 +134,7 @@
 				<configuration>
 					<images>
 						<image>
-							<name>sparrowsearch</name>
+							<name>sparrowhawk_sparrowsearch</name>
 							<run>
 								<ports>
 									<port>${es.tcp.port}:9300</port>
