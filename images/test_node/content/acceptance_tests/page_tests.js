@@ -16,10 +16,12 @@ describe('Webpage', function() {
 
 	before('before', function (done) {
 		helper.subscribe(done, subscriberJson);
+		done();
 	});
 
 	after('after', function (done) {
-		helper.clean(done, 'test');
+		//helper.clean(done, 'test');
+		done();
 	});
 
 	it('Index a webpage', function(done) {

@@ -12,6 +12,7 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
@@ -96,7 +97,8 @@ public class ElasticsearchDao implements DocumentDao {
 		}
 		// TODO check to see if this document already exists 
 		// in the index
-		IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).get();
+		//IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).get();
+		IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).setRefreshPolicy(RefreshPolicy.IMMEDIATE).get();
 		return resp.getId();
 	}
 
@@ -169,6 +171,11 @@ public class ElasticsearchDao implements DocumentDao {
 			.setSettings(Settings.builder().loadFromSource(settingsJson))
 			.addMapping(type, mappingJson)
 			.get();
+		
+		LOGGER.info("Refreshing " + indexName);
+		client.admin().indices()
+        .prepareRefresh(indexName)   
+        .get();
 			
 		return String.valueOf(resp.isAcknowledged());
 	}

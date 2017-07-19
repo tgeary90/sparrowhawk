@@ -1,8 +1,8 @@
 
 // config.js - config for connections to sparrowhawk web filter
 
-//var host = 'sparrowhawk';
-var host = 'localhost';
+var host = 'sparrowhawk';
+//var host = '172.17.0.1';
 
 var getPage = {
 	host : host,
@@ -21,22 +21,31 @@ var subscribe = {
 var search = {
 	host : host,
 	port : 8090,
+	method : 'POST',
 	path : '/pages/sparrowhawk/search',
-	method : 'POST'
+	headers: {
+		'Content-Type': 'application/json'
+	}
 };
 
 var index = {
 	host : host,
 	port : 8090,
 	path : '/pages/sparrowhawk/index',
-	method : 'POST'
+	method : 'POST',
+	headers: {
+		'Content-Type': 'application/json'
+	}
 };
 
 var filter = {
 	host: host,
 	port: 8090,
 	path: '/pages/sparrowhawk/filter',
-	method: 'POST'
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json'
+	}
 };
 
 module.exports.getPage = getPage;

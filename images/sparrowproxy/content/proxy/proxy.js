@@ -5,6 +5,8 @@ var http = require('http');
 var url = require('url');
 var sparrowhawk = require('./config');
 
+var requestUrl;
+var target;
 
 var proxy = http.createServer(function (req, res) {
 
@@ -12,7 +14,7 @@ var proxy = http.createServer(function (req, res) {
 	console.log("URL: " + req.url);
 	console.log("Method: " + req.method);
 	
-    var requestUrl = url.parse(req.url);
+    requestUrl = url.parse(req.url);
 
     console.log("hostname: " + requestUrl.hostname);
     console.log("pathname: " + requestUrl.pathname);
@@ -26,12 +28,15 @@ var proxy = http.createServer(function (req, res) {
     // DEBUG
     //process.exit(1);
 
-    var target = requestUrl.hostname + requestUrl.path;
-    var isFullUrl = /\//.text(target);
+    target = requestUrl.hostname + requestUrl.path;
+    console.log("raw target: " + target);
+    var isFullUrl = /\//.test(target);
     if (! isFullUrl) {
-    	target += '/index.html';
+    	target += '/';
     }
-    console.log('Request for URL received: ' + target);
+    target = target.replace(/\/$/, '/index.html');
+    
+    console.log('full target: ' + target);
 
     var docId;
     var webpage = {
@@ -39,6 +44,8 @@ var proxy = http.createServer(function (req, res) {
 	    'html': ""
     };
 	
+    isPageInElasticsearch(webpage);
+    
 }).listen(process.argv[2]);
 console.log('sparrow-proxy listening on ' + process.argv[2] + '...');
 
@@ -53,24 +60,37 @@ function isPageInElasticsearch(webpage) {
 	
 	sparrowhawk.search.headers = { 
 		'Content-Type': 'application/json',
+		'Content-Length': webpageText.length
 	};
-	var sparrowReq = http.request(sparrowhawk.search, function (err, sparrowRes) {
-		if (err) {
-			console.log("Webpage length is: " +webpageText.length);
-			console.log("Webpage is: " + webpageText);
-			console.error("Failure at sparrowhawk search endpoint " + err.message);
-			return;
-		}
+	console.log("sending request to endpoint: " + sparrowhawk.search.path);
+	console.log("page: " + webpageText);
+
+	var sparrowReq = http.request(sparrowhawk.search, function (sparrowRes) {
+//		for (var h in sparrowhawk.search.headers) {
+//			console.log("header: " + sparrowhawk.search.headers[h]);
+//		}
+		
+//		if (err) {
+//			console.log("Webpage length is: " +webpageText.length);
+//			console.log("Webpage is: " + webpageText);
+//			console.error("Failure at sparrowhawk search endpoint " + err);
+//			return;
+//		}
 		
 		sparrowRes.on('data', function (chunk) {
+			console.log(chunk);
 			docId += chunk;
 		});
-		sparrowRes.on('end', function () {
+		sparrowRes.on('end', function (err) {
+			if (err) {
+				console.log("Error received from search endpoint");
+				return;
+			}
 			console.log("docId: " + docId);
 
 			// if no, we need to fetch it from origin (or 404)
-			if (docId === '') {
-				getPageFromOrigin(requestUrl);
+			if (docId === 'miss') {
+				getPageFromOrigin(webpage);
 			}
 			else if (/\w+/.test(docId)) {
 				filterPage(webpage);
@@ -78,23 +98,31 @@ function isPageInElasticsearch(webpage) {
 		});
 	});
 	
+	sparrowReq.on('error', function (e) {
+		console.log('problem with request to search endpoint: ' + e);
+		console.log('msg: ' + e.message);
+	});
 	sparrowReq.write(webpageText);
 	sparrowReq.end();
 }
 
-/**
- * @param requestUrl
- */
-function getPageFromOrigin(requestUrl, indexPage) {
-	var pageReq = http.request(requestUrl, function (err, sparrowRes) {
-		if (err) {
-			console.log("Could not connect to origin server at: " + req.hostname);
-		}
-		
-		sparrowRes.on('connect', function () {
-			console.log('Connected to origin');
+function getPageFromOrigin(webpage) {
+	
+	var page;
+	var reqTarget = "http://" + target;
+	console.log("reqTarget: " + reqTarget);
+	console.log("requestUrl: " + requestUrl);
+	
+	http.get(reqTarget, function (sparrowRes) {
+//		if (err) {
+//			console.log("Could not get " + reqTarget + " from origin server");
+//			return;
+//		}
+		sparrowRes.setEncoding("utf8");
+		//sparrowRes.on('connect', function () {
+		//	console.log('Connected to origin');
 			//console.log('headers: ' + JSON.stringify(sparrowRes.headers));
-		});
+		//});
 		sparrowRes.on('data', function (chunk) {
 			page += chunk;
 		});
@@ -103,28 +131,36 @@ function getPageFromOrigin(requestUrl, indexPage) {
 			
 			// and index it
 			webpage.html = page;
-			sparrowhawk.index.headers = {'Content-Length': webpage.length};
+			//sparrowhawk.index.headers = {'Content-Length': webpage.length};
 			indexPage(webpage);
 		});
 	});
-	pageReq.end();
+	//pageReq.end();
 }
 
 /**
  * @param webpage
  */
 function indexPage(webpage) {
+	var webpageText = JSON.stringify(webpage);
+	console.log("indexing page: " + webpage.url);
+	
+	sparrowhawk.index.headers = { 
+		'Content-Type': 'application/json',
+		'Content-Length': webpageText.length
+	};
+	
 	var indexReq = http.request(sparrowhawk.index, function (err, sparrowRes) {
 		if (err) {
-			console.error('Index request failed ' + e.message);
+			console.error('Index request failed ' + err.message);
 		}
 		
 		sparrowRes.on('end', function () {
-			console.log('Indexed page ' + requestUrl);
+			console.log('Indexed page ' + webpage.url);
 			filterPage(webpage);
 		})
 	});
-	indexReq.write(webpage);
+	indexReq.write(webpageText);
 	indexReq.end();
 }
 
@@ -132,6 +168,14 @@ function indexPage(webpage) {
  * @param webpage
  */
 function filterPage(webpage) {
+	var webpageText = JSON.stringify(webpage);
+	console.log("filtering page: " + webpage.url);
+	
+	sparrowhawk.filter.headers = { 
+		'Content-Type': 'application/json',
+		'Content-Length': webpageText.length
+	};
+	
 	var filterReq = http.request(sparrowhawk.filter, function (sparrowRes) {
 		
 		var decision;
@@ -140,19 +184,17 @@ function filterPage(webpage) {
 		});
 		
 		sparrowRes.on('end', function () {
-			console.log('Filtered page ' + requestUrl);
-			
 			if (decision === 'ALLOW') {
+				console.log('allow');
 				if (webpage.html === '') {
-					getPageFromOrigin(requestUrl, function (requestUrl) {
-						console.log("Retrieving " + requestUrl.hostname + requestUrl.path);
-					});
+					getPageFromOrigin(webpage);
 				}
 				res.writeHead(sparrowRes.statusCode, {'Content-Type': 'application/json'});
 				res.write(webpage);
 				res.end();
 			}
 			else if (decision === 'BLOCK') {
+				console.log('block');
 				res.writeHead(sparrowRes.statusCode, {'Content-Type': 'text/plain'});
 				res.write('BLOCKED');
 				res.end();
@@ -165,6 +207,6 @@ function filterPage(webpage) {
 	filterReq.on('error', function (e) {
 		console.error('Filter request failed ' + e.message);
 	});
-	filterReq.write(webpage);
+	filterReq.write(JSON.stringify(webpage));
 	filterReq.end();
 }

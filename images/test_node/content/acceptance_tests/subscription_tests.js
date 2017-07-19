@@ -17,7 +17,8 @@ describe('Subscription', function() {
   });
 
   after('after', function (done) {
-    helper.clean(done, 'test');
+    //helper.clean(done, 'test');
+	  done();
   });
   
   it('Subscribe to Sparrowhawk', function (done) {
