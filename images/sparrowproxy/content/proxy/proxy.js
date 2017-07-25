@@ -150,11 +150,7 @@ function indexPage(webpage) {
 		'Content-Length': webpageText.length
 	};
 	
-	var indexReq = http.request(sparrowhawk.index, function (err, sparrowRes) {
-		if (err) {
-			console.error('Index request failed ' + err.message);
-		}
-		
+	var indexReq = http.request(sparrowhawk.index, function (sparrowRes) {
 		sparrowRes.on('end', function () {
 			console.log('Indexed page ' + webpage.url);
 			filterPage(webpage);

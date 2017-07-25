@@ -10,11 +10,11 @@ http.createServer(function (req, res) {
 	var resource = parsedUrl.path;
 	resource = resource.substring(1);
 	if (/index/.test(req.url)) {
-		res.writeHead(200, { 'Content-Type': 'application/json' });
+		res.writeHead(200, { 'Content-Type': 'text/html' });
 		console.log("fetching: " + resource);
 		var file = fs.createReadStream(resource);
 		file.pipe(res);
 	}
-}).listen(80);
+}).listen(808);
 
-console.log("local-server: listening on port 80...");
+console.log("local-server: listening on port 808...");
