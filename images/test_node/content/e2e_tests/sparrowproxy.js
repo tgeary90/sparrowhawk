@@ -13,17 +13,21 @@ http.createServer(function (req, res) {
 	
 //	console.log("Request from: " + req.connection.remoteAddress);
 //	console.log("host: " + host);
-//	console.log("path: " + targetUrl.pathname);
+	console.log("path: " + targetUrl.pathname);
 //	console.log("port: " + port);
 	console.log(req.headers);
 	
 	href = 'http://' + host + targetUrl.pathname;
+	// fully populate the target URL (href)
+	var isFullUrl = /\//.test(href);
+	if ( ! isFullUrl) {
+		href += '/';
+	}
+	href = href.replace(/\/$/, '/index.html');
 	console.log('href: ' + href);
 	
-//	var isFullUrl = /\//.test()
 	
-	
-	http.get('http://local-server' + targetUrl.pathname, function (originRes) {
+	http.get(href, function (originRes) {
 		
 		console.log("received from origin: " + originRes.statusCode);
 		originRes.pipe(res);
