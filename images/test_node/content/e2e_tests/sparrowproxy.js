@@ -7,10 +7,17 @@ var targetUrl
 http.createServer(function (req, res) {
 	
 	targetUrl = url.parse(req.url); 
-	console.log("Request " + req.url + " from origin");
+	rawHost = req.headers["host"];
+	host = rawHost.substring(0, rawHost.search(/:/));
+	port = rawHost.substring(rawHost.search(/:/) + 1);
 	
-	//res.writeHead(200, {'Content-Type': 'text/html'});
-	http.get('http://local-server:808/index.html', function (originRes) {
+	console.log("Request from: " + req.connection.remoteAddress);
+	console.log("host: " + host);
+	console.log("path: " + targetUrl.pathname);
+	console.log("port: " + port);
+	console.log("verb: " + targetUrl.method);
+	
+	http.get('http://local-server' + targetUrl.pathname, function (originRes) {
 		
 		console.log("received from origin: " + originRes.statusCode);
 		originRes.pipe(res);

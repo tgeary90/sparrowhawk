@@ -15,6 +15,6 @@ http.createServer(function (req, res) {
 		var file = fs.createReadStream(resource);
 		file.pipe(res);
 	}
-}).listen(808);
+}).listen(80);
 
-console.log("local-server: listening on port 808...");
+console.log("local-server: listening on port 80...");
