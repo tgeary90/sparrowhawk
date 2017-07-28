@@ -4,8 +4,8 @@ var helper = require('../common_test/test_helper');
 
 var subscriberJson = '{"id":"f45a1143-a917-4bda-861b-79473f28238b","name":"test","license":"CUSTOMER"}';
 
-var host = 'sparrowhawk';
-//var host = '172.17.0.1';
+//var host = 'sparrowhawk';
+var host = '172.17.0.1';
 
 chai.use(chaiHttp);
 

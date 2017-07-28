@@ -4,8 +4,8 @@ var helper = require('../common_test/test_helper');
 
 chai.use(chaiHttp);
 
-var host = 'http://sparrowhawk:8090';
-//var host = 'http://172.17.0.1:8090';
+//var host = 'http://sparrowhawk:8090';
+var host = 'http://172.17.0.1:8090';
 
 
 var page = '{"url": "www.test.local/text.txt", "html":""}';

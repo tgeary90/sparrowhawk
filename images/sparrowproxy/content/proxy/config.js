@@ -1,8 +1,8 @@
 
 // config.js - config for connections to sparrowhawk web filter
 
-var host = 'sparrowhawk';
-//var host = '172.17.0.1';
+//var host = 'sparrowhawk';
+var host = '172.17.0.1';
 
 var getPage = {
 	host : host,

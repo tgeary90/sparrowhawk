@@ -3,8 +3,8 @@ var chai = require('chai'), chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
 
-var host = 'sparrowhawk';
-//var host = '172.17.0.1';
+//var host = 'sparrowhawk';
+var host = '172.17.0.1';
 
 module.exports.clean = function (done, subscriber) {
   chai.request('http://sparrowsearch:9200')

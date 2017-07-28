@@ -9,7 +9,7 @@ RUN apt-get update \
  && apt-get clean 
 
 ENV HOSTNAME=sparrowproxy
-CMD ["node", "/proxy/proxy.js", "8091"]
+CMD ["node", "/proxy/sparrowproxy.js", "8091"]
 
 
 

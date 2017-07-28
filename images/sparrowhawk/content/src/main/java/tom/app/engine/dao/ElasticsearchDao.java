@@ -99,11 +99,15 @@ public class ElasticsearchDao implements DocumentDao {
 		// in the index
 		//IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).get();
 		IndexResponse resp = client.prepareIndex(index, "webpage").setSource(rawJson).setRefreshPolicy(RefreshPolicy.IMMEDIATE).get();
+		LOGGER.info("Indexing page in ES");
 		return resp.getId();
 	}
 
 	@Override
 	public WebPage get(String docId, String index) {
+		
+		LOGGER.info("Getting page with doc id: " + docId);
+		
 		GetResponse resp = client.prepareGet(index, "webpage", String.valueOf(docId)).get();
 		byte[] respJson = resp.getSourceAsBytes();
 		WebPage page = null;
@@ -131,6 +135,7 @@ public class ElasticsearchDao implements DocumentDao {
 	public String prepareIndex(String indexName, String type) throws IOException {
 		
 		LOGGER.info("Preparing index with name: " + indexName + " and with mapping " + type);
+		
 		boolean isIndexExists = IndexCheck(indexName);
 		if (isIndexExists) {
 			return "Index already exists for " + indexName;
@@ -182,6 +187,9 @@ public class ElasticsearchDao implements DocumentDao {
 
 	@Override
 	public String getDocId(String subId, String value, String type, String field) {
+		
+		LOGGER.info("getting doc id...");
+		
 		String result = "miss";
 		SearchResponse resp = client.prepareSearch(subId)
 				.setTypes(type)
@@ -197,6 +205,9 @@ public class ElasticsearchDao implements DocumentDao {
 	
 	@Override
 	public WebPage filter(String subId, String type, QueryBuilder qb) {
+		
+		LOGGER.info("Filtering page for " + subId);
+		
 		WebPage page = new WebPage("", "");
 		SearchResponse resp = client.prepareSearch(subId)
 				.setTypes(type)
