@@ -3,8 +3,11 @@ var url = require('url');
 var sparrowhawk = require('./config');
 
 var href;
+var clientStream;
 
 http.createServer(function (req, res) {
+	
+	clientStream = res;
 	
 	var targetUrl = url.parse(req.url); 
 	rawHost = req.headers["host"];
@@ -36,9 +39,9 @@ http.createServer(function (req, res) {
 	// get the page from origin
 	http.get(href, function (originRes) {
 		
-		console.log("received from origin: " + originRes.statusCode);
-		originRes.pipe(res);
-		console.log("piped back");
+//		console.log("received from origin: " + originRes.statusCode);
+//		originRes.pipe(res);
+//		console.log("piped back");
 	});
 }).listen(process.argv[2]);
 console.log("Sparrowproxy, listening on " + process.argv[2]);
@@ -72,11 +75,10 @@ function isPageInElasticsearch(webpage) {
 			// if no, we need to fetch it from origin (or 404)
 			if (docId === 'miss') {
 				indexPage(webpage);
-				//console.log('miss');
 			}
 			else if (/\w+/.test(docId)) {
-				//filterPage(webpage);
 				console.log('hit');
+				filterPage(webpage);
 			}
 		});
 	});
@@ -98,6 +100,7 @@ function indexPage(webpage) {
 	
 	http.get(uri, function (getRes) {
 		console.log("retrieving page from origin...");
+		var docId = '';
 		
 		getRes.on('data', function (chunk) {
 			page += chunk;
@@ -113,15 +116,61 @@ function indexPage(webpage) {
 			//console.log("webpageText: " + webpageText);
 			
 			var indexReq = http.request(sparrowhawk.index, function (indexRes) {
+				console.log('Sending page '+ webpageText.length +' to elasticsearch...');
+				
+				indexRes.on('data', function (chunk) {
+					docId += chunk;
+				});
 				indexRes.on('end', function () {
-					console.log("debug: invoking filter page");
-					//filterPage(webpage);
+					console.log("filtering " + docId);
+					filterPage(webpage);
 				});
 			});
-			console.log('Sending page '+ webpageText.length +' to elasticsearch...');
 			indexReq.write(webpageText);
 			indexReq.end();
 			console.log('Finished sending page')
 		});
 	});
+}
+
+function filterPage(webpage) {
+	
+	console.log("filtering page at: " + webpage.url);
+
+	var uri = webpage.url;
+	var webpageHtml = webpage.html;
+	var webpageUrlOnly = {
+		url: webpage.url,
+		html: ""
+	};
+	var decision = '';
+	
+	var filterReq = http.request(sparrowhawk.filter, function (filterRes) {
+		
+		filterRes.on('data', function (chunk) {
+			decision += chunk;
+		});
+		
+		filterRes.on('end', function () {
+
+			console.log("decision: " + decision);
+			if (decision === 'ALLOW') {
+				clientStream.writeHead(filterRes.statusCode, {'Content-Type': 'text/html'});
+				clientStream.write(webpageHtml);
+			}
+			else if (decision === 'BLOCK') {
+				clientStream.writeHead(filterRes.statusCode, {'Content-Type': 'text/plain'});
+				clientStream.write(decision);
+			}
+			else {
+				console.log('ERROR: sparrowhawk policy neither ALLOW or BLOCK: ' + decision);
+			}
+			clientStream.end();
+		});
+	});
+	filterReq.on('error', function (e) {
+		console.error('Filter request failed ' + e.message);
+	});
+	filterReq.write(JSON.stringify(webpageUrlOnly));
+	filterReq.end();
 }

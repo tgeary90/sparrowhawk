@@ -147,7 +147,7 @@ function indexPage(webpage) {
 	
 	sparrowhawk.index.headers = { 
 		'Content-Type': 'application/json',
-		'Content-Length': webpageText.length
+//		'Content-Length': webpageText.length
 	};
 	
 	var indexReq = http.request(sparrowhawk.index, function (sparrowRes) {
@@ -164,13 +164,10 @@ function indexPage(webpage) {
  * @param webpage
  */
 function filterPage(webpage) {
-	var webpageText = JSON.stringify(webpage);
-	console.log("filtering page: " + webpage.url);
 	
-	sparrowhawk.filter.headers = { 
-		'Content-Type': 'application/json',
-		'Content-Length': webpageText.length
-	};
+	var uri = webpage.url;
+//	var webpageText = JSON.stringify(webpage);
+	console.log("filtering page at: " + uri);
 	
 	var filterReq = http.request(sparrowhawk.filter, function (sparrowRes) {
 		
