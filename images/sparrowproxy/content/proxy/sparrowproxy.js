@@ -10,17 +10,20 @@ http.createServer(function (req, res) {
 	clientStream = res;
 	
 	var targetUrl = url.parse(req.url); 
-	rawHost = req.headers["host"];
-	host = rawHost.substring(0, rawHost.search(/:/));
-	port = rawHost.substring(rawHost.search(/:/) + 1);
+	var host = req.headers["host"];
+	if (/\:/.test(host)) {
+		host = host.substring(0, host.search(/\:/));
+		port = host.substring(host.search(/\:/) + 1);
+		console.log("port: " + port);
+	}
 	
-//	console.log("Request from: " + req.connection.remoteAddress);
-//	console.log("host: " + host);
+	console.log("Request from: " + req.connection.remoteAddress);
+	console.log("host: " + host);
 	console.log("path: " + targetUrl.pathname);
-//	console.log("port: " + port);
 	console.log(req.headers);
 	
 	href = 'http://' + host + targetUrl.pathname;
+	
 	// fully populate the target URL (href)
 	var isFullUrl = /\//.test(href);
 	if ( ! isFullUrl) {
@@ -52,13 +55,7 @@ function isPageInElasticsearch(webpage) {
 	var webpageText = JSON.stringify(webpage);
 	var docId = '';
 	
-//	sparrowhawk.search.headers = { 
-//		'Content-Type': 'application/json',
-//		'Content-Length': webpageText.length
-//	};
-	
 	console.log("sending request to endpoint: " + sparrowhawk.search.path);
-	console.log("page: " + webpageText);
 	
 	var searchReq = http.request(sparrowhawk.search, function (searchRes) {
 		
@@ -78,6 +75,11 @@ function isPageInElasticsearch(webpage) {
 			}
 			else if (/\w+/.test(docId)) {
 				console.log('hit');
+				console.log('DEBUG - webpage: ' + webpageText);
+				
+				// TODO: actually GET the page from ES
+				// the webpage variable is just passed in from the request
+				// it HASNT been populated yet!!
 				filterPage(webpage);
 			}
 		});
@@ -108,7 +110,7 @@ function indexPage(webpage) {
 		
 		getRes.on('end', function () {
 			webpage.html = page;
-			console.log('finished building page');
+			console.log('finished building page, here\'s a little sample: ' + webpage.html.substring(0, 10));
 		
 			// index page into ES
 			
@@ -156,6 +158,7 @@ function filterPage(webpage) {
 			console.log("decision: " + decision);
 			if (decision === 'ALLOW') {
 				clientStream.writeHead(filterRes.statusCode, {'Content-Type': 'text/html'});
+				console.log("DEBUG - html: " + webpage.html);
 				clientStream.write(webpageHtml);
 			}
 			else if (decision === 'BLOCK') {

@@ -78,11 +78,16 @@ public class ElasticsearchDao implements DocumentDao {
 	 * ID
 	 */
 	@Override
-	public String index(WebPage page, String index)  {
+	public String index(WebPage page, String index) {
 		
 		boolean isIndexExists = IndexCheck(index);
 		if ( ! isIndexExists) {
-			return "Request not from Subscriber.";
+			try {
+				LOGGER.info("No index for " + index + " creating...");
+				prepareIndex(index, "webpage");
+			} catch (IOException e) {
+				LOGGER.error("Could not prepare index " + index + " for page " + page.getUrl());
+			}
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -189,6 +194,16 @@ public class ElasticsearchDao implements DocumentDao {
 	public String getDocId(String subId, String value, String type, String field) {
 		
 		LOGGER.info("getting doc id...");
+		
+		boolean isIndexExists = IndexCheck(subId);
+		if ( ! isIndexExists) {
+			try {
+				LOGGER.info("No index for " + subId + " creating...");
+				prepareIndex(subId, "webpage");
+			} catch (IOException e) {
+				LOGGER.error("Could not prepare index " + subId);
+			}
+		}
 		
 		String result = "miss";
 		SearchResponse resp = client.prepareSearch(subId)

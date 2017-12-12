@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sparrowhawk
+spec:
+  containers:
+  - name: sparrowproxy
+    image: sparrowproxy
+    ports: 
+    - containerPort: 8091
+    command:
+    - /bin/bash
+    args: ['node', '/proxy/sparrowproxy.js', '8091']
+  - name: sparrowhawk
+    image: sparrowhawk
+    command:
+    - /bin/bash
+    args: ['/start_sparrowhawk.sh', 'prod', '0.0.1']
+  - name: sparrowsearch
+    image: sparrowsearch
+    command:
+    - /bin/bash
+    args: ['elasticsearch', '-Ecluster.name=sparrowhawk', '-Enode.name=sparrowsearch']
+    volumeMounts:
+    - mountPath: /usr/share/elasticsearch/data
+volumes:
+- name: elasticsearch
+  emptyDir: {}
+    
